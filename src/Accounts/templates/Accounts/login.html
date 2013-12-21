@@ -1,0 +1,10 @@
+<fieldset>
+	<legend>登录</legend>
+	<form action = {% url 'account:login'%} method = "post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value = "确定" />
+	</form>
+</fieldset>
+<a href = {% url 'account:register'%}>注册</a>
+<a href = {% url 'account:tw_oauthBegin'%}>使用腾讯微博登陆</a>
