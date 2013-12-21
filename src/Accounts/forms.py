@@ -4,7 +4,7 @@ Created on 2013年12月16日
 @author: july
 '''
 from Accounts.models import MyUser
-from django.core.exceptions import ObjectDoesNotExist,ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 
 class LoginForm(forms.Form):
@@ -13,22 +13,22 @@ class LoginForm(forms.Form):
     username = forms.CharField(label="用户名",max_length=30)
     password = forms.CharField(label="密码",max_length=30, min_length=6,widget=forms.PasswordInput())
 
-class RegisterForm(forms.Form):
+class RegisterForm(forms.ModelForm):
     """
     """
-    username = forms.CharField(label="用户名",max_length=30)
-    email = forms.EmailField(label="Email",max_length=255)
+    class Meta:
+        model = MyUser
+        fields = ('username', 'nickname','email')
+        
     password = forms.CharField(label="密码",max_length=30, min_length=6,widget=forms.PasswordInput())
     password2 = forms.CharField(label="确认密码",max_length=30,min_length=6,widget=forms.PasswordInput())
 
-    def clean_email(self):
-        try:
-            user = MyUser.objects.get(email = self.cleaned_data["email"])
-        except ObjectDoesNotExist:
-            return
-        else:
-            if user:
-                raise ValidationError("该Email地址已经被使用")
+    
+    def clean_password2(self):
+        password1 = self.cleaned_data['password']
+        password2 = self.cleaned_data['password2']
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("两次密码输入不一致")
             
 if __name__ == '__main__':
     pass

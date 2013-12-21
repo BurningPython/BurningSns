@@ -142,7 +142,7 @@ class OpenAuth(models.Model):
             return False
         
     @property
-    def isOverdueIn3days(self):
+    def isOverdueSoon(self):
         """
         是否将在3天内过期
         """
@@ -155,8 +155,10 @@ class OpenAuth(models.Model):
             return False
     
     REQUIRED_FIELDS = [site,access_token,refresh_token]
+    
     def __str__(self):
-        return self.site
+        mstr = self.site +":"+ self.user.username
+        return mstr
     
 if __name__ == "__main__":
     pass
