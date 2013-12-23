@@ -127,7 +127,7 @@ class OpenAuth(models.Model):
     expires_in = models.IntegerField()
     openid = models.CharField(max_length = 255)
     update_on = models.DateTimeField(default = datetime.now())
-    
+    enable = models.BooleanField(default = True)
     @property
     def isOverdue(self):
         """
@@ -149,7 +149,7 @@ class OpenAuth(models.Model):
         now = datetime.now()
         delta = datetime.timedelta(days = 3 ,seconds = self.expires_in)
         
-        if not self.isOverdue and self.update_on + delta >= now:
+        if (not self.isOverdue) and (self.update_on + delta >= now):
             return True
         else:
             return False
