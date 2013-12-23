@@ -6,7 +6,8 @@ Created on 2013年12月12日
 @author: july
 '''
 import random
-from Accounts.models import OpenAuth,MyUser
+from ..models import OpenAuth,MyUser
+from .tokenService import TokenService
 from django.core.exceptions import ObjectDoesNotExist
 class OpenAuthService(object):
     
@@ -39,7 +40,7 @@ class OpenAuthService(object):
             self.nick = ""
 
     
-    def getUser(self):
+    def get_or_create_user(self):
         """
         返回一个字典:
         user:保存用户实体对象
@@ -52,7 +53,6 @@ class OpenAuthService(object):
                 site = self.site,
                 access_token = self.access_token,
                 refresh_token = self.refresh_token,
-                openid = self.openid
             )
         #没有匹配数据,那么新建一个用户,为该用户关联该数据
         #自动创建的账号名和密码等规则还需要进一步讨论才能确定,
@@ -66,7 +66,14 @@ class OpenAuthService(object):
             new_user.set_password(password)
             new_user.save()
             #绑定到社交网络
-            self.bindOrUpdateOpenAuth(self.name)
+            tokenService = TokenService(new_user)
+            tokenService.addToken(
+                self.site,
+                access_token=self.access_token,
+                refresh_token=self.refresh_token,
+                expires_in=self.expires_in,
+                openid=self.openid,
+                )
             user = new_user
             retdic["password"] = password
         #否则获取该数据的对应用户
@@ -77,47 +84,6 @@ class OpenAuthService(object):
         retdic["user"] = user
         return retdic
 
-
-    
-    def isUserBindedSite(self,username):
-        """
-        检查用户是否已经绑定到指的社交平台
-        如果是,返回openauth对象,否则返回None
-        """
-        try:
-            oauth = OpenAuth.objects.get(username = username,site = site)
-        except ObjectDoesNotExist:
-            return None
-        else:
-            return oauth
-        
-    def bindOrUpdateOpenAuth(self,username):
-        """
-        更新用户的绑定信息(比如access_token),如果用户没有绑定对应社交网络,则创建绑定
-        """
-        oauth = self.isUserBindedSite(username)
-        #如果已经存在该openAuth,则更新
-        if oauth:
-            oauth.update(
-                site = self.site,
-                access_token = self.access_token,
-                refresh_token = self.refresh_token,
-                expires_in = self.expires_in,
-                openid = self.openid
-            )
-            oauth.save()
-        #如果不存在这个openAuth,则继续
-        else:
-            user = MyUser.objects.get(username = username)
-            user.openauth_set.create(
-                site = self.site, 
-                access_token = self.access_token,
-                refresh_token = self.refresh_token,
-                expires_in = self.expires_in,
-                openid = self.openid
-            )
-            user.save()
-        
     
 if __name__ == '__main__':
     pass

@@ -17,7 +17,7 @@ class Status(object):
 	in_reply_to_screen_name = ''	#回复人昵称
 	thumbnail_pic = ''				#缩略图地址,没有时不返回此字段
 
-	bmiddle_pic	''					#中等尺寸图片地址，没有时不返回此字段
+	bmiddle_pic	= ''					#中等尺寸图片地址，没有时不返回此字段
 	original_pic = ''				#原始图片地址，没有时不返回此字段
 	geo	= ''						#地理信息字段 详细
 	user = ''						#微博作者的用户信息字段 详细

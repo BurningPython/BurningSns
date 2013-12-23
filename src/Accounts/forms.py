@@ -1,8 +1,8 @@
-'''
+"""
 Created on 2013年12月16日
 
 @author: july
-'''
+"""
 from Accounts.models import MyUser
 from django.core.exceptions import ObjectDoesNotExist
 from django import forms

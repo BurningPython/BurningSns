@@ -1,5 +1,7 @@
 '''
-	少年，我知道这个传说中的封装真的很垃圾，但是我想了想还是觉得区域自治制度比较好，自己的区域还是归当地政府管，只要能向中央交钱就好了。
+
+    少年，我知道这个传说中的封装真的很垃圾，但是我想了想还是觉得区域自治制度比较好，自己的区域还是归当地政府管，只要能向中央交钱就好了。
+
 '''
 __author__ = 'Mr.ELeven'
 __email__ = 'iGod_eleven@163.com'
@@ -11,13 +13,13 @@ __sitedomain = 'eleven.org.cn'
 
 import urllib, urllib.request, io, json
 from django.core.exceptions import ObjectDoesNotExist
-from SNSInterface import SNSService, IStatusesService, ICommentsService, IFavouritesService, IShortUrlsService
+from .baseHandler import *
 
 def show_json(j):
-	print(json.dumps(j, indent=4, separators=(',',':')))
+    print(json.dumps(j, indent=4, separators=(',',':')))
 
 #Sina微博顶层服务
-class SinaInterface(SNSService):
+class SinaHandler(BaseHandler):
 	Site = 'Sina'				#社交网站名称
 	Domain = 'www.weibo.com'
 	
@@ -37,7 +39,7 @@ class SinaInterface(SNSService):
 
 
 #微博服务
-class StatusesService(IStatusesService):	
+class StatusService(IStatusService):
 
 	#api for get news
 	__url_news_getpublicnews = 'https://api.weibo.com/2/statuses/public_timeline.json'
@@ -87,7 +89,7 @@ class StatusesService(IStatusesService):
 		parms['method'] = 'post'
 		return self.get_json(self.__url_news_update, parms)
 
-	def get_json(self, url, parms = {}):			#获取json,私有方法，请忽视
+	def get_json(self, url, **parms):			#获取json,私有方法，请忽视
 		try:
 			method = parms['method']
 		except Exception:
@@ -107,7 +109,7 @@ class StatusesService(IStatusesService):
 		else:
 			pass
 
-class CommentsService(ICommentsService):	#评论服务
+class CommentsService(ICommentService):	#评论服务
 	__url_comments_show = 'https://api.weibo.com/2/comments/show.json'
 	__url_comments_by_me = 'https://api.weibo.com/2/comments/by_me.json'
 	__url_comments_to_me = 'https://api.weibo.com/2/comments/to_me.json'
@@ -175,7 +177,7 @@ class CommentsService(ICommentsService):	#评论服务
 		else:
 			pass
 
-class FavouritesService(IFavouritesService): #收藏服务
+class FavouritesService(IFavoriteService): #收藏服务
 	__url_favorites = 'https://api.weibo.com/2/favorites.json'
 	__url_favorites_ids = 'https://api.weibo.com/2/favorites/ids.json'
 	__url_favorites_show = 'https://api.weibo.com/2/favorites/show.json'
@@ -216,12 +218,12 @@ class FavouritesService(IFavouritesService): #收藏服务
 		parms['id'] = statusid
 		return self.get_json(self.__url_favorites_create, parms)
 
-	def Destory(self, statusid):	#取消收藏
+	def Destory(self, statusid, **parms):	#取消收藏
 		parms['method'] = 'post'
 		parms['id'] = statusid
 		return self.get_json(self.__url_favorites_destroy, parms)
 
-	def get_json(self, url, parms = {}):		#获取json,私有方法，请忽视
+	def get_json(self, url, **parms):		#获取json,私有方法，请忽视
 		try:
 			method = parms['method']
 		except Exception:
@@ -241,7 +243,7 @@ class FavouritesService(IFavouritesService): #收藏服务
 		else:
 			pass
 
-class ShortUrlsService(IShortUrlsService):
+class ShortUrlsService(IShortUrlService):
 	__url_shorturl_shorten = '' 		#长链转短链
 	__url_shorturl_expand = ''			#短链转长链
 	__url_shorturl_share_counts = ''	#获取短连接在微博上的微博分享数
@@ -297,7 +299,7 @@ class RemindService(object):			#通知服务
 	def GetUnread_count(user):			#获取所有未读记录
 		pass
 
-	def ClearUnRead():					#清除所有未读记录
+	def ClearUnRead(user):					#清除所有未读记录
 		pass
 
 #管理Token，

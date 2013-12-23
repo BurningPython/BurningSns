@@ -15,10 +15,9 @@ class MyUserManager(BaseUserManager):
         """
         if not username:
             raise ValueError('用户名是必须的')
-        
         user = self.model(
-            username = username,
-            email = self.normalize_email(email)
+            username=username,
+            email=self.normalize_email(email)
         )
         
         user.set_password(password)
@@ -50,6 +49,10 @@ class MyUser(AbstractBaseUser):
     nickname = models.CharField(
         verbose_name = "昵称",
         max_length = 255,
+    )
+    ip_address = models.CharField(
+        verbose_name = "IP地址",
+        max_length = 128
     )
     
     is_active = models.BooleanField(default = True)
@@ -89,6 +92,7 @@ class OpenAuth(models.Model):
     openid = models.CharField(max_length = 255)
     update_on = models.DateTimeField(default = datetime.now())
     enable = models.BooleanField(default = True)
+
     @property
     def isOverdue(self):
         """
