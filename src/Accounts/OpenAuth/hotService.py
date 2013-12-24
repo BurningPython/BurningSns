@@ -59,7 +59,7 @@ class StatusService(BaseHotService):
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.__siteHandlers[sname].statusService
-                for status in service.GetFriendsStatuses(params):
+                for status in service.GetFriendsStatuses(**params):
                     statuses.append(status)
             else:
                 continue

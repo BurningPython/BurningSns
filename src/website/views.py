@@ -8,10 +8,9 @@ def content_view(request):
     if not user.is_authenticated():
         return HttpResponseRedirect("index")
 
-    service = StatuseService()
-    twh = None
-    if twh:
-        content = twh.home_timeline()
+    service = StatusService(user)
+    if service:
+        content = service.GetFriendsStatuses()
     else:
         content = None
     return render(request, "website/content.html", {'user': user, 'timelinecontent': content})
