@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -37,7 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'BurningSns',
-    'Accounts',
+    'accounts',
+    'website',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,4 +85,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'Accounts.MyUser'
+AUTH_USER_MODEL = 'accounts.MyUser'

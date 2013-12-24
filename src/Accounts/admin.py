@@ -5,11 +5,13 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from Accounts.models import MyUser,OpenAuth
+from .models import MyUser, OpenAuth
 
-class OpenAuthInline(admin.TabularInline ):
+
+class OpenAuthInline(admin.TabularInline):
     model = OpenAuth
     extra = 1
+
 
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
@@ -19,7 +21,7 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ('username', 'nickname','email')
+        fields = ('username', 'nickname', 'email')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -47,7 +49,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ['username','nickname', 'password', 'email', 'is_active', 'is_admin']
+        fields = ['username', 'nickname', 'password', 'email', 'is_active', 'is_admin']
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -64,12 +66,12 @@ class MyUserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('username','nickname', 'email', 'is_active','is_admin')
+    list_display = ('username', 'nickname', 'email', 'is_active', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('username','nickname', 'password')}),
+        (None, {'fields': ('username', 'nickname', 'password')}),
         ('Personal info', {'fields': ('email',)}),
-        ('Permissions', {'fields': ('is_active','is_admin',)}),
+        ('Permissions', {'fields': ('is_active', 'is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -79,11 +81,10 @@ class MyUserAdmin(UserAdmin):
             'fields': ('username', 'email', 'password1', 'password2')}
         ),
     )
-    search_fields = ('username','nickname', 'email',)
-    ordering = ('username','email',)
+    search_fields = ('username', 'nickname', 'email',)
+    ordering = ('username', 'email',)
     filter_horizontal = ()
-    
-    
+
     inlines = [OpenAuthInline]
 
 # Now register the new UserAdmin...

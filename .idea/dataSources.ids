@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source source="LOCAL" name="Django default" product="" version="" jdbc-version="" driver-name="" driver-version="" uuid="1115aa75-5922-4220-8e02-8f3b800aee27">
+    <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+    <jdbc-url>jdbc:sqlite:D:\Github\BurningSns\src\db.sqlite3</jdbc-url>
+    <libraries/>
+  </data-source>
+</component>

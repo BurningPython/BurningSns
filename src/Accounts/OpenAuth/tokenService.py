@@ -9,13 +9,13 @@ Created on 2013年12月22日
 
 '''
 
-
-from ..models import OpenAuth,MyUser
 from django.core.exceptions import ObjectDoesNotExist
 
+from ..models import OpenAuth, MyUser
+
+
 class TokenService(object):
-    
-    def __init__(self,user):
+    def __init__(self, user):
         """
         根据用户实例对象来初始化
         """
@@ -29,7 +29,6 @@ class TokenService(object):
         添加Token,即绑定一个AccessToken,如果该site已经被绑定,
         则更新accesstoken信息
         """
-        username = self.user.username
 
         if 'access_token' and 'refresh_token' and 'expires_in' in args:
             access_token = args['access_token']
@@ -43,30 +42,28 @@ class TokenService(object):
         else:
             openid = ""
 
-        oauth = self.isUserBindedSite(username = username, site = site)
+        oauth = self.isUserBindedSite(site=site)
         #如果已经存在该openAuth,则更新
         if oauth:
-            oauth.update(
-                site = site,
-                access_token = access_token,
-                refresh_token = refresh_token,
-                expires_in = expires_in,
-                openid = openid,
-            )
+            oauth.site = site
+            oauth.access_token = access_token
+            oauth.refresh_token = refresh_token
+            oauth.expires_in = expires_in
+            oauth.openid = openid
             oauth.save()
         #如果不存在这个openAuth,则继续
         else:
-            user = MyUser.objects.get(username = username)
+            user = self.user
             user.openauth_set.create(
-                site = site,
-                access_token = access_token,
-                refresh_token = refresh_token,
-                expires_in = expires_in,
-                openid = openid,
+                site=site,
+                access_token=access_token,
+                refresh_token=refresh_token,
+                expires_in=expires_in,
+                openid=openid,
             )
             user.save()
-    
-    def setTokenEnable(self,site,enable = True):
+
+    def setTokenEnable(self, site, enable=True):
         """
         设置对应site的accessToken是否有效,
         传入enable默认为True,即为有效
@@ -75,8 +72,8 @@ class TokenService(object):
         #TODO
 
         pass
-    
-    def deleteToken(self,site):
+
+    def deleteToken(self, site):
         """
         删除一个accessToken,直接从数据库中删除
         """
@@ -85,7 +82,7 @@ class TokenService(object):
 
         pass
 
-    def deleteTokens(self,*site):
+    def deleteTokens(self, *site):
         """
         批量删除accessToken
         """
@@ -94,7 +91,7 @@ class TokenService(object):
 
         pass
 
-    def refreshToken(self,site):
+    def refreshToken(self, site):
         """
         通过refreshToken,刷新一个accessToken,因为accessToken是会过期的.
         refreshToken在OpenAuthModel里面有
@@ -103,8 +100,8 @@ class TokenService(object):
         #TODO
 
         pass
-   
-    def refreshTokens(self,*site):
+
+    def refreshTokens(self, *site):
         """
         批量刷新refreshToken
         """
@@ -129,15 +126,19 @@ class TokenService(object):
         """
 
         if username:
-            name = username
+            try:
+                user = MyUser.objects.get(username)
+            except ObjectDoesNotExist:
+                raise Exception("用户名为%s的账户不存在" % username)
         else:
-            name = self.user.username
+            user = self.user
         try:
-            oauth = OpenAuth.objects.get(username = name, site = site)
+            oauth = OpenAuth.objects.get(user=user, site=site)
         except ObjectDoesNotExist:
             return None
         else:
             return oauth
-    
+
+
 if __name__ == '__main__':
     pass

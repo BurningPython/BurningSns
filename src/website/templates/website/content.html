@@ -1,0 +1,25 @@
+<div>
+	<h1>
+		私密内容页
+	</h1>
+	<p>你好,{{ user.username }}!你小名是不是叫 {{ user.nickname }}?</p>
+	<a href = {% url 'account:logout'%}>退出</a>
+</div>
+{% if timelinecontent %}
+	{% if timelinecontent.ret == 0 %}
+	<ul>
+		{% for item in timelinecontent.data.info %}
+		<li>
+			<p>{{ item.nick }}:</p>
+			{{ item.text }}
+			<p>from:{{ item.from }}</p>
+		</li>	
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>{{ timelinecontent.msg }}</p>
+	{% endif %}
+{% else %}
+<p>少年,你还没有绑定任何社交网络,赶紧绑定吧</p>
+    <a href= {% url "account:tw_oauth_request" %}>绑定腾讯微博</a>
+{% endif %}
