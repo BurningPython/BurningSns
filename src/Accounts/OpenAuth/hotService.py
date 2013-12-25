@@ -10,11 +10,12 @@
 from .sns.sinaHandler import SinaHandler
 from .sns.tencentWeiboHandler import TencentWeiboHandler
 
+
 class BaseHotService(object):
     """
 
     """
-    __siteHandlers = {}
+    site_handlers = {}
 
     def __init__(self, user, *site):
         if not site:
@@ -29,7 +30,8 @@ class BaseHotService(object):
             else:
                 continue
 
-            self.__siteHandlers[sname] = handler
+            self.site_handlers[sname] = handler
+
 
 class StatusService(BaseHotService):
     """
@@ -43,7 +45,7 @@ class StatusService(BaseHotService):
         *site : 社交网络列表
         """
 
-        BaseHotService.__init__(self,user,*site)
+        BaseHotService.__init__(self, user, *site)
 
     def GetFriendsStatuses(self, *site, **params):
         """
@@ -55,10 +57,10 @@ class StatusService(BaseHotService):
 
         statuses = []
 
-        for sname in self.__siteHandlers:
+        for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
-                service = self.__siteHandlers[sname].statusService
+                service = self.site_handlers[sname].statusService
                 for status in service.GetFriendsStatuses(**params):
                     statuses.append(status)
             else:
@@ -67,7 +69,7 @@ class StatusService(BaseHotService):
         if not statuses:
             return DataResponse(code = 0, message = "未获取任何动态")
         else:
-            return DataResponse(data=statuses)
+            return DataResponse(data = statuses)
 
     def Repost(self, site, statusid, **params):
         """
@@ -77,10 +79,10 @@ class StatusService(BaseHotService):
         code = 0
         msg = ""
 
-        if not site in self.__siteHandlers:
+        if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
         else:
-            handler = self.__siteHandlers[site]
+            handler = self.site_handlers[site]
             try:
                 handler.statusService.Repost(statusid)
             except Exception as e:
@@ -88,7 +90,7 @@ class StatusService(BaseHotService):
             else:
                 code = 1
 
-        return DataResponse(code=code,message=msg)
+        return DataResponse(code = code, message = msg)
 
     def Destroy(self, site, statusid, **params):
         """
@@ -98,10 +100,10 @@ class StatusService(BaseHotService):
         code = 0
         msg = ""
 
-        if not site in self.__siteHandlers:
+        if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
         else:
-            service = self.__siteHandlers[site]
+            service = self.site_handlers[site]
             try:
                 service.StatusService.Destroy(statusid)
             except Exception as e:
@@ -109,7 +111,7 @@ class StatusService(BaseHotService):
             else:
                 code = 1
 
-        return DataResponse(code=code,message=msg)
+        return DataResponse(code = code, message = msg)
 
     def Update(self, *site, **params):
         """
@@ -120,9 +122,9 @@ class StatusService(BaseHotService):
         msg = ""
         success_sites = []
 
-        for sname in self.__siteHandlers:
+        for sname in self.site_handlers:
             if sname.lower() in [s.lower() for s in site]:
-                service = self.__siteHandlers[sname].StatusService
+                service = self.site_handlers[sname].StatusService
                 try:
                     service.Update(params)
                 except Exception as e:
@@ -133,7 +135,7 @@ class StatusService(BaseHotService):
             else:
                 continue
 
-        return DataResponse(code=code,message=msg,data=success_sites)
+        return DataResponse(code = code, message = msg, data = success_sites)
 
 
 class CommentService(BaseHotService):
@@ -146,25 +148,26 @@ class CommentService(BaseHotService):
 
     def GetComments(self, site, statusid, **params):
         data = []
-        service = self.__siteHandlers[site].commentService
+        service = self.site_handlers[site].commentService
 
         comments = service.GetComments(statusid, **params)
-        return DataResponse(data=data)
+        return DataResponse(data = data)
 
     def Create(self, site, statusid, content, **params):
-        service = self.__siteHandlers[site].commentService
+        service = self.site_handlers[site].commentService
         service.Create(statusid, content, **params)
         return DataResponse()
 
     def Destory(self, site, commentid, **params):
-        service = self.__siteHandlers[site].commentService
-        service.Destory(commentid,**params)
+        service = self.site_handlers[site].commentService
+        service.Destory(commentid, **params)
         return DataResponse()
 
     def Reply(self, site, statusid, commentid, **params):
-        service = self.__siteHandlers[site].commentService
+        service = self.site_handlers[site].commentService
         service.Reply(statusid, commentid, **params)
         return DataResponse()
+
 
 class FavoriteService(BaseHotService):
     """
@@ -181,10 +184,10 @@ class FavoriteService(BaseHotService):
 
         favorites = []
 
-        for sname in self.__siteHandlers:
+        for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
-                service = self.__siteHandlers[sname].favoriteService
+                service = self.site_handlers[sname].favoriteService
                 for favorite in service.GetFavorites(**params):
                     favorites.append(favorite)
             else:
@@ -200,8 +203,8 @@ class FavoriteService(BaseHotService):
         获取单条收藏
         """
 
-        service = self.__siteHandlers[site].favoriteService
-        favorite = service.GetFavorite(favoriteid,**params)
+        service = self.site_handlers[site].favoriteService
+        favorite = service.GetFavorite(favoriteid, **params)
 
         return DataResponse(data = favorite)
 
@@ -209,7 +212,7 @@ class FavoriteService(BaseHotService):
         """
         收藏某条动态
         """
-        service = self.__siteHandlers[site].favoriteService
+        service = self.site_handlers[site].favoriteService
         service.Create(statusid, **params)
 
         return DataResponse()
@@ -218,7 +221,7 @@ class FavoriteService(BaseHotService):
         """
         取消收藏某条动态
         """
-        service = self.__siteHandlers[site].favoriteService
+        service = self.site_handlers[site].favoriteService
         service.Destory(statusid, **params)
 
         return DataResponse()

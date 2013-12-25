@@ -13,7 +13,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
+TEMPLATE_DIRS = (
+    u"{0}/templates".format(BASE_DIR),
+)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
