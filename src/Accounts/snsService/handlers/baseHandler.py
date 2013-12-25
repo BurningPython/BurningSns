@@ -6,8 +6,8 @@
 """
 #模块顶层服务
 class BaseHandler(object):
-    Site = ''                    #社交网站名称
-    Domain = ''    #域名
+    site = ''                    #社交网站名称
+    domain = ''    #域名
 
     statusesService = ""
     commentsService = ""
@@ -16,8 +16,8 @@ class BaseHandler(object):
 
     def __init__(self, user):
         # self.StatusesService = IStatusService(user)
-        # self.CommentsService = ICommentsService(user)
-        # self.FavouritesService = IFavouritesService(user)
+        # self.TencentWeiboCommentService = ICommentsService(user)
+        # self.TencentWeiboFavoriteService = IFavouritesService(user)
         # self.ShortUrlsService = IShortUrlsService(user)
         pass
 
@@ -115,3 +115,27 @@ class IShortUrlService(object):
     def Expand(self, shorturl, **parms):            #短链转长链：短链接
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
+
+class DataResponse(object):
+    """
+    请求响应数据包
+    """
+
+    data = []
+    code = ""
+    message = ""
+    site = ""
+
+    def __init__(self, ret = 0, code = 0, message = "", site="unknow", data = None):
+        """
+        ret:0为正常,1为错误
+        code:错误编码
+        message:错误描述
+        data:数据
+        """
+        self.ret = ret
+        self.code = code
+        self.message = message
+        self.site = ""
+        if data:
+            self.data = data

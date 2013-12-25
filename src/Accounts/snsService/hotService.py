@@ -9,12 +9,16 @@
 
 from accounts.snsService.handlers.sinaHandler import SinaHandler
 from accounts.snsService.handlers.tencentWeiboHandler import TencentWeiboHandler
+from accounts.snsService.handlers.baseHandler import DataResponse
 
+
+#todo 所有Service接口都没有去实现排序功能,所以之后要补上
 
 class BaseHotService(object):
     """
-
+    面向UI层的Service基类
     """
+
     site_handlers = {}
 
     def __init__(self, user, *site):
@@ -54,88 +58,57 @@ class StatusService(BaseHotService):
         **params:请求参数
         
         """
-
-        statuses = []
-
+        retdata = HotData()
         for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].statusService
-                for status in service.GetFriendsStatuses(**params):
-                    statuses.append(status)
+                data = service.GetFriendsStatuses(**params)
+                retdata.append(data)
             else:
                 continue
 
-        if not statuses:
-            return DataResponse(code = 0, message = "未获取任何动态")
-        else:
-            return DataResponse(data = statuses)
+        return retdata
 
     def Repost(self, site, statusid, **params):
         """
         转发
         """
 
-        code = 0
-        msg = ""
-
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            try:
-                handler.statusService.Repost(statusid)
-            except Exception as e:
-                msg = str(e)
-            else:
-                code = 1
-
-        return DataResponse(code = code, message = msg)
+            response = handler.statusService.Repost(statusid,**params)
+        return HotData(response)
 
     def Destroy(self, site, statusid, **params):
         """
         删除动态
         """
 
-        code = 0
-        msg = ""
-
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
         else:
-            service = self.site_handlers[site]
-            try:
-                service.StatusService.Destroy(statusid)
-            except Exception as e:
-                msg = str(e)
-            else:
-                code = 1
-
-        return DataResponse(code = code, message = msg)
+            handler = self.site_handlers[site]
+            response = handler.statusService.Destroy(statusid,**params)
+        return HotData(response)
 
     def Update(self, *site, **params):
         """
         发表动态
         """
-
-        code = 0
-        msg = ""
-        success_sites = []
-
+        retdata = HotData()
         for sname in self.site_handlers:
             if sname.lower() in [s.lower() for s in site]:
-                service = self.site_handlers[sname].StatusService
-                try:
-                    service.Update(params)
-                except Exception as e:
-                    msg = str(e)
-                else:
-                    code = 1
-                    success_sites.append(sname)
+                response = self.site_handlers[sname].StatusService.Update(**params)
+                retdata.append(response)
             else:
                 continue
 
-        return DataResponse(code = code, message = msg, data = success_sites)
+        return retdata
 
 
 class CommentService(BaseHotService):
@@ -147,26 +120,40 @@ class CommentService(BaseHotService):
         BaseHotService.__init__(self, user, *site)
 
     def GetComments(self, site, statusid, **params):
-        data = []
-        service = self.site_handlers[site].commentService
-
-        comments = service.GetComments(statusid, **params)
-        return DataResponse(data = data)
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.commentService.GetComments(statusid,**params)
+        return HotData(response)
 
     def Create(self, site, statusid, content, **params):
-        service = self.site_handlers[site].commentService
-        service.Create(statusid, content, **params)
-        return DataResponse()
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.commentService.Create(statusid,content,**params)
+        return HotData(response)
 
     def Destory(self, site, commentid, **params):
-        service = self.site_handlers[site].commentService
-        service.Destory(commentid, **params)
-        return DataResponse()
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.commentService.Destory(commentid,**params)
+        return HotData(response)
 
     def Reply(self, site, statusid, commentid, **params):
-        service = self.site_handlers[site].commentService
-        service.Reply(statusid, commentid, **params)
-        return DataResponse()
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.commentService.Reply(statusid,commentid,**params)
+        return HotData(response)
 
 
 class FavoriteService(BaseHotService):
@@ -181,64 +168,93 @@ class FavoriteService(BaseHotService):
         """
         获取所有收藏
         """
-
-        favorites = []
-
+        retdata = HotData()
         for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].favoriteService
-                for favorite in service.GetFavorites(**params):
-                    favorites.append(favorite)
+                data = service.GetFavorites(**params)
+                retdata.append(data)
             else:
                 continue
 
-        if not favorites:
-            return DataResponse(code = 0, message = "未获取任何收藏")
-        else:
-            return DataResponse(data = favorites)
+        return retdata
 
     def GetFavorite(self, site, favoriteid, **params):
         """
         获取单条收藏
         """
-
-        service = self.site_handlers[site].favoriteService
-        favorite = service.GetFavorite(favoriteid, **params)
-
-        return DataResponse(data = favorite)
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.favoriteService.GetFavorite(favoriteid,**params)
+        return HotData(response)
 
     def Create(self, site, statusid, **params):
         """
         收藏某条动态
         """
-        service = self.site_handlers[site].favoriteService
-        service.Create(statusid, **params)
-
-        return DataResponse()
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.favoriteService.Create(statusid,**params)
+        return HotData(response)
 
     def Destory(self, site, statusid, **params):
         """
         取消收藏某条动态
         """
-        service = self.site_handlers[site].favoriteService
-        service.Destory(statusid, **params)
+        if not site in self.site_handlers:
+            msg = "未绑定%s平台或绑定已过期" % site
+            response = DataResponse(ret=1,message=msg)
+        else:
+            handler = self.site_handlers[site]
+            response = handler.favoriteService.Destory(statusid,**params)
+        return HotData(response)
 
-        return DataResponse()
 
-
-class DataResponse(object):
+class HotData(object):
     """
-    请求相应数据包类
+    这是面向UI层的请求相应数据包类
+    由于请求有可能面向多个平台,因此每个请求都可能同时存在 失败 和 成功,
+    所以把请求失败的错误记录放在一个errors列表中,列表中的每个元素都是
+    一个字典,记录错误来源(site),错误码(code)和描述(message),以便对
+    用户做出提醒或是其他操作.
+    所有成功的请求数据均以统一的模型存放在data列表中
     """
 
-    def __init__(self, code = 1, message = "", data = None):
+    data = []
+    errors = []
+
+    def __init__(self,response = None):
         """
-        code:返回1为正常,0为非正常
-        message:错误描述
-        data:数据
+        初始化
         """
-        self.code = code
-        self.message = message
-        self.data = data
+        if response:
+            self.append(response)
+
+    def append(self,response):
+        """
+        合并DataResponse
+        """
+        if not isinstance(response,DataResponse):
+            raise Exception("合并类型必须为DataResponse")
+
+        if response.ret == 0:
+            for _data in response.data:
+                self.data.append(_data)
+        else:
+            error = {
+                'code':response.code,
+                'site':response.site,
+                'message':response.message
+            }
+            self.errors.append(error)
+
+        return self
+
 
