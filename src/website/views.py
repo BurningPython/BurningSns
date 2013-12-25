@@ -9,8 +9,10 @@ def content_view(request):
         return HttpResponseRedirect("index")
 
     service = StatusService(user)
-    if service:
-        content = service.GetFriendsStatuses()
+    ret = service.GetFriendsStatuses()
+    if ret.code == 1:
+        content = ret.data
+        print(content)
     else:
         content = None
     return render(request, "website/content.html", {'user': user, 'timelinecontent': content})
