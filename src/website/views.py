@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from accounts.OpenAuth.hotService import *
+from accounts.snsService.hotService import *
 
 
 def content_view(request):

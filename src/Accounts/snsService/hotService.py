@@ -7,8 +7,8 @@
 
 """
 
-from .sns.sinaHandler import SinaHandler
-from .sns.tencentWeiboHandler import TencentWeiboHandler
+from accounts.snsService.handlers.sinaHandler import SinaHandler
+from accounts.snsService.handlers.tencentWeiboHandler import TencentWeiboHandler
 
 
 class BaseHotService(object):

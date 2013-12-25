@@ -5,14 +5,14 @@ Created on 2013年12月16日
 """
 from django import forms
 
-from .models import MyUser
+from .models import User
 
 
 class LoginForm(forms.Form):
     """
     """
-    username = forms.CharField(label="用户名", max_length=30)
-    password = forms.CharField(label="密码", max_length=30, min_length=6, widget=forms.PasswordInput())
+    username = forms.CharField(label = "用户名", max_length = 30)
+    password = forms.CharField(label = "密码", max_length = 30, min_length = 6, widget = forms.PasswordInput())
 
 
 class RegisterForm(forms.ModelForm):
@@ -20,11 +20,11 @@ class RegisterForm(forms.ModelForm):
     """
 
     class Meta:
-        model = MyUser
+        model = User
         fields = ('username', 'nickname', 'email')
 
-    password = forms.CharField(label="密码", max_length=30, min_length=6, widget=forms.PasswordInput())
-    password2 = forms.CharField(label="确认密码", max_length=30, min_length=6, widget=forms.PasswordInput())
+    password = forms.CharField(label = "密码", max_length = 30, min_length = 6, widget = forms.PasswordInput())
+    password2 = forms.CharField(label = "确认密码", max_length = 30, min_length = 6, widget = forms.PasswordInput())
 
 
     def clean_password2(self):

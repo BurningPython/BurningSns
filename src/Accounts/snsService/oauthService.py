@@ -5,10 +5,13 @@ Created on 2013年12月12日
 
 @author: july
 '''
-import random
-from ..models import OpenAuth,MyUser
-from .tokenService import TokenService
+
 from django.core.exceptions import ObjectDoesNotExist
+
+from accounts.models import OpenAuth, User
+from accounts.snsService.tokenService import TokenService
+
+
 class OpenAuthService(object):
     
     def __init__(self,site,**args):
@@ -62,7 +65,7 @@ class OpenAuthService(object):
             email = self.name + "@temp.com"
             #password = random.randint(100000,999999)
             password = "123456"
-            new_user = MyUser.objects.create(username = self.name,email = email, nickname = self.nick)
+            new_user = User.objects.create(username = self.name, email = email, nickname = self.nick)
             new_user.set_password(password)
             new_user.save()
             #绑定到社交网络

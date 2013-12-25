@@ -10,11 +10,13 @@ client_secret = "c2ee75038d707a610c7a4a10c0377c2e"
 api_url = "https://open.t.qq.com/api/%s"
 api_common_parm = "oauth_consumer_key=%s&access_token=%s&openid=%s&oauth_version=2.a&scope=all"
 
-from .baseHandler import *
-from django.core.exceptions import ObjectDoesNotExist
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
+
+from django.core.exceptions import ObjectDoesNotExist
+
+from .baseHandler import *
 
 
 class ts_utils(object):
@@ -22,12 +24,12 @@ class ts_utils(object):
     def get_api_data(api_name, token, method = "get", **params):
 
         base_url = api_url % api_name
-        common_parm = api_common_parm % (token.access_token,token.openid,client_id)
+        common_parm = api_common_parm % (token.access_token, token.openid, client_id)
         if method.lower() == "get":
             base_url += "?"
             api_param = ""
-            for key,value in params:
-                api_param += "&%s=%s" % (key,value)
+            for key, value in params:
+                api_param += "&%s=%s" % (key, value)
             target_url = base_url + common_parm + api_param
             ret = urlopen(target_url).read().decode("utf-8")
         else:
@@ -70,7 +72,7 @@ class StatusService(IStatusService):
         api_name = "statuses/home_timeline"
         params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name,self.token,method = "post",**params)
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
         return ret_data
 
     def Repost(self, statusid, **params):
@@ -82,7 +84,7 @@ class StatusService(IStatusService):
 
         params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name,self.token,method = "post",**params)
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
 
         return ret_data
 
@@ -95,7 +97,7 @@ class StatusService(IStatusService):
 
         params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name,self.token,method = "post",**params)
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
 
         return ret_data
 
@@ -107,7 +109,7 @@ class StatusService(IStatusService):
         api_name = "t/add"
         params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name,self.token,method = "post",**params)
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
         return ret_data
 
 #评论服务
@@ -117,7 +119,7 @@ class CommentsService(ICommentService):
     """
 
     def __init__(self, user):
-        super(ICommentService,self).__init__()
+        super(ICommentService, self).__init__()
         self.user = user
         pass
 
@@ -167,5 +169,4 @@ class FavouritesService(IFavoriteService):
 
 
 if __name__ == '__main__':
-
     pass

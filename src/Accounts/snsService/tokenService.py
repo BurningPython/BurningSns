@@ -11,7 +11,7 @@ Created on 2013年12月22日
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import OpenAuth, MyUser
+from accounts.models import OpenAuth, User
 
 
 class TokenService(object):
@@ -127,7 +127,7 @@ class TokenService(object):
 
         if username:
             try:
-                user = MyUser.objects.get(username)
+                user = User.objects.get(username)
             except ObjectDoesNotExist:
                 raise Exception("用户名为%s的账户不存在" % username)
         else:

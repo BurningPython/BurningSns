@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from .models import MyUser, OpenAuth
+from .models import User, OpenAuth
 
 
 class OpenAuthInline(admin.TabularInline):
@@ -16,11 +16,11 @@ class OpenAuthInline(admin.TabularInline):
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
-    password1 = forms.CharField(label='密码', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='确认密码', widget=forms.PasswordInput)
+    password1 = forms.CharField(label = '密码', widget = forms.PasswordInput)
+    password2 = forms.CharField(label = '确认密码', widget = forms.PasswordInput)
 
     class Meta:
-        model = MyUser
+        model = User
         fields = ('username', 'nickname', 'email')
 
     def clean_password2(self):
@@ -31,9 +31,9 @@ class UserCreationForm(forms.ModelForm):
             raise forms.ValidationError("Passwords don't match")
         return password2
 
-    def save(self, commit=True):
+    def save(self, commit = True):
         # Save the provided password in hashed format
-        user = super(UserCreationForm, self).save(commit=False)
+        user = super(UserCreationForm, self).save(commit = False)
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
@@ -48,7 +48,7 @@ class UserChangeForm(forms.ModelForm):
     password = ReadOnlyPasswordHashField()
 
     class Meta:
-        model = MyUser
+        model = User
         fields = ['username', 'nickname', 'password', 'email', 'is_active', 'is_admin']
 
     def clean_password(self):
@@ -66,19 +66,20 @@ class MyUserAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('username', 'nickname', 'email', 'is_active', 'is_admin')
+    list_display = ('username', 'nickname', 'email', 'ip_address', 'is_active', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('username', 'nickname', 'password')}),
-        ('Personal info', {'fields': ('email',)}),
-        ('Permissions', {'fields': ('is_active', 'is_admin',)}),
+        (None, {'fields':('username', 'nickname', 'password')}),
+        ('Personal info', {'fields':('email',)}),
+        ('登录信息', {'fields':('ip_address',)}),
+        ('Permissions', {'fields':('is_active', 'is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
-            'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2')}
+            'classes':('wide',),
+            'fields':('username', 'email', 'password1', 'password2')}
         ),
     )
     search_fields = ('username', 'nickname', 'email',)
@@ -88,7 +89,7 @@ class MyUserAdmin(UserAdmin):
     inlines = [OpenAuthInline]
 
 # Now register the new UserAdmin...
-admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(User, MyUserAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)
