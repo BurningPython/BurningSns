@@ -8,7 +8,7 @@ def content_view(request):
         return redirect("index")
 
     service = StatusService(user)
-    ret = service.GetFriendsStatuses()
+    ret = service.get_friends_statuses()
     return render(
         request,
         "website/content.html",

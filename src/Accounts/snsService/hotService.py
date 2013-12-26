@@ -51,7 +51,7 @@ class StatusService(BaseHotService):
 
         BaseHotService.__init__(self, user, *site)
 
-    def GetFriendsStatuses(self, *site, **params):
+    def get_friends_statuses(self, *site, **params):
         """
         获取好友的动态信息
 
@@ -63,7 +63,7 @@ class StatusService(BaseHotService):
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].statusService
-                data = service.GetFriendsStatuses(**params)
+                data = service.get_friends_statuses(**params)
                 retdata.append(data)
             else:
                 continue
@@ -71,7 +71,7 @@ class StatusService(BaseHotService):
         retdata.data.sort(key=lambda status : status.created_at,reverse=True)
         return retdata
 
-    def Repost(self, site, statusid, **params):
+    def repost_status(self, site, statusid, **params):
         """
         转发
         """
@@ -81,10 +81,10 @@ class StatusService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.statusService.Repost(statusid,**params)
+            response = handler.statusService.repost_status(statusid,**params)
         return HotData(response)
 
-    def Destroy(self, site, statusid, **params):
+    def destory_status(self, site, statusid, **params):
         """
         删除动态
         """
@@ -94,17 +94,17 @@ class StatusService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.statusService.Destroy(statusid,**params)
+            response = handler.statusService.destory_status(statusid,**params)
         return HotData(response)
 
-    def Update(self, *site, **params):
+    def update_status(self, *site, **params):
         """
         发表动态
         """
         retdata = HotData()
         for sname in self.site_handlers:
             if sname.lower() in [s.lower() for s in site]:
-                response = self.site_handlers[sname].StatusService.Update(**params)
+                response = self.site_handlers[sname].StatusService.update_status(**params)
                 retdata.append(response)
             else:
                 continue
@@ -120,40 +120,40 @@ class CommentService(BaseHotService):
     def __init__(self, user, *site):
         BaseHotService.__init__(self, user, *site)
 
-    def GetComments(self, site, statusid, **params):
+    def get_comments(self, site, statusid, **params):
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.commentService.GetComments(statusid,**params)
+            response = handler.commentService.get_comments(statusid,**params)
         return HotData(response)
 
-    def Create(self, site, statusid, content, **params):
+    def create_comment(self, site, statusid, content, **params):
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.commentService.Create(statusid,content,**params)
+            response = handler.commentService.create_comment(statusid,content,**params)
         return HotData(response)
 
-    def Destory(self, site, commentid, **params):
+    def destroy_comment(self, site, commentid, **params):
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.commentService.Destory(commentid,**params)
+            response = handler.commentService.destroy_comment(commentid,**params)
         return HotData(response)
 
-    def Reply(self, site, statusid, commentid, **params):
+    def replay_comment(self, site, statusid, commentid, **params):
         if not site in self.site_handlers:
             msg = "未绑定%s平台或绑定已过期" % site
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.commentService.Reply(statusid,commentid,**params)
+            response = handler.commentService.replay_comment(statusid,commentid,**params)
         return HotData(response)
 
 
@@ -165,7 +165,7 @@ class FavoriteService(BaseHotService):
     def __init__(self, user, *site):
         BaseHotService.__init__(self, user, *site)
 
-    def GetFavorites(self, *site, **params):
+    def get_favorites(self, *site, **params):
         """
         获取所有收藏
         """
@@ -174,14 +174,14 @@ class FavoriteService(BaseHotService):
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].favoriteService
-                data = service.GetFavorites(**params)
+                data = service.get_favorites(**params)
                 retdata.append(data)
             else:
                 continue
 
         return retdata
 
-    def GetFavorite(self, site, favoriteid, **params):
+    def get_favorite(self, site, favoriteid, **params):
         """
         获取单条收藏
         """
@@ -190,10 +190,10 @@ class FavoriteService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.favoriteService.GetFavorite(favoriteid,**params)
+            response = handler.favoriteService.get_favorite(favoriteid,**params)
         return HotData(response)
 
-    def Create(self, site, statusid, **params):
+    def create_comment(self, site, statusid, **params):
         """
         收藏某条动态
         """
@@ -202,10 +202,10 @@ class FavoriteService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.favoriteService.Create(statusid,**params)
+            response = handler.favoriteService.create_comment(statusid,**params)
         return HotData(response)
 
-    def Destory(self, site, statusid, **params):
+    def destroy_comment(self, site, statusid, **params):
         """
         取消收藏某条动态
         """
@@ -214,7 +214,7 @@ class FavoriteService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.favoriteService.Destory(statusid,**params)
+            response = handler.favoriteService.destroy_comment(statusid,**params)
         return HotData(response)
 
 

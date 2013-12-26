@@ -47,6 +47,7 @@ class TencentWeiboHandler(BaseHandler):
 
     def __init__(self, user):
         """
+
         """
         super(BaseHandler, self).__init__()
         self.statusService = TencentWeiboStatusService(user)
@@ -67,7 +68,7 @@ class TencentWeiboStatusService(IStatusService):
         except ObjectDoesNotExist:
             self.token = None
 
-    def GetFriendsStatuses(self, **params):
+    def get_friends_statuses(self, **params):
         """
         获取好友动态列表
         format:     返回数据的格式（json或xml）
@@ -118,7 +119,7 @@ class TencentWeiboStatusService(IStatusService):
 
         return DataResponse(ret,code,message,site="腾讯微博",data=status_data)
 
-    def Repost(self, statusid, **params):
+    def repost_status(self, statusid, **params):
         """
         转发微博
         """
@@ -131,7 +132,7 @@ class TencentWeiboStatusService(IStatusService):
 
         return ret_data
 
-    def Destroy(self, statusid, **params):
+    def destory_status(self, statusid, **params):
         """
         删除微博
         """
@@ -144,7 +145,7 @@ class TencentWeiboStatusService(IStatusService):
 
         return ret_data
 
-    def Update(self, content, **params):
+    def update_status(self, content, **params):
         """
         发微博：微博内容
         """
@@ -166,19 +167,19 @@ class TencentWeiboCommentService(ICommentService):
         self.user = user
         pass
 
-    def GetComments(self, statusid, **parms):        #获取指定ID的微博的所有评论
+    def get_comments(self, statusid, **parms):        #获取指定ID的微博的所有评论
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Create(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
+    def create_comment(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Destory(self, commentid, **parms):            #删除一条评论：评论ID
+    def destroy_comment(self, commentid, **parms):            #删除一条评论：评论ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Reply(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
+    def replay_comment(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
@@ -194,19 +195,19 @@ class TencentWeiboFavoriteService(IFavoriteService):
         self.user = user
         pass
 
-    def GetFavorites(self, **parms):                #获取所有收藏
+    def get_favorites(self, **parms):                #获取所有收藏
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def GetFavorite(self, statusid, **parms):        #获取单条收藏：微博ID
+    def get_favorite(self, statusid, **parms):        #获取单条收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Create(self, statusid, **parms):            #添加收藏：微博ID
+    def create_favorite(self, statusid, **parms):            #添加收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Destory(self, statusid, **parms):            #取消收藏：微博ID
+    def destroy_favorite(self, statusid, **parms):            #取消收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 

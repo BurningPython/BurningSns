@@ -31,19 +31,19 @@ class IStatusService(object):
         self.user = user
         pass
 
-    def GetFriendsStatuses(self, **parms):            #获取好友动态列表
+    def get_friends_statuses(self, **parms):            #获取好友动态列表
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Repost(self, statusid, **parms):        #转发：微博ID
+    def repost_status(self, statusid, **parms):        #转发：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Destroy(self, statusid, **parms):        #删除：微博ID
+    def destory_status(self, statusid, **parms):        #删除：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Update(self, content, **parms):        #发微博：微博内容
+    def update_status(self, content, **parms):        #发微博：微博内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
@@ -57,19 +57,19 @@ class ICommentService(object):
         self.user = user
         pass
 
-    def GetComments(self, statusid, **parms):        #获取指定ID的微博的所有评论
+    def get_comments(self, statusid, **parms):        #获取指定ID的微博的所有评论
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Create(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
+    def create_comment(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Destory(self, commentid, **parms):            #删除一条评论：评论ID
+    def destroy_comment(self, commentid, **parms):            #删除一条评论：评论ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Reply(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
+    def replay_comment(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
@@ -83,19 +83,19 @@ class IFavoriteService(object):
         self.user = user
         pass
 
-    def GetFavorites(self, **parms):                #获取所有收藏
+    def get_favorites(self, **parms):                #获取所有收藏
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def GetFavorite(self, statusid, **parms):        #获取单条收藏：微博ID
+    def get_favorite(self, statusid, **parms):        #获取单条收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Create(self, statusid, **parms):            #添加收藏：微博ID
+    def create_favorite(self, statusid, **parms):            #添加收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def Destory(self, statusid, **parms):            #取消收藏：微博ID
+    def destroy_favorite(self, statusid, **parms):            #取消收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
