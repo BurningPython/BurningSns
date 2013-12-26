@@ -13,7 +13,8 @@
                     <img src="{{ item.head_pic }}" />
                     <p>{{ item.nick }}:</p>
                     {{ item.text }}<br/>
-                    from:<a href="{{ item.source_url }}">{{ item.source }}</a>
+                    from:<a href="{{ item.source_url }}">{{ item.source }}</a><br/>
+                    发布时间:{{ item.created_at }}
                 </li>
             {% endfor %}
         </ul>

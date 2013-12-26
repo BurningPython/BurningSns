@@ -32,6 +32,7 @@ class ts_utils(object):
             for key in params:
                 api_param += "&%s=%s" % (key, params[key])
             target_url = base_url + common_parm + api_param
+            print(target_url)
             ret = urlopen(target_url).read().decode("utf-8")
         else:
             querystring = common_parm + "&" + urlencode(params)
