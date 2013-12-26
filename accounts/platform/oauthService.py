@@ -9,7 +9,7 @@ Created on 2013年12月12日
 from django.core.exceptions import ObjectDoesNotExist
 
 from accounts.models import OpenAuth, User
-from accounts.snsService.tokenService import TokenService
+from accounts.platform.tokenService import TokenService
 
 
 class OpenAuthService(object):

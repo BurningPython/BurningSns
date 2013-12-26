@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
-from accounts.snsService.hotService import *
+from accounts.platform.hotService import *
+from accounts.platform.handlers.sinaHandler import SinaHandler
 
 
 def content_view(request):

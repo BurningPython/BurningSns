@@ -5,7 +5,7 @@ Created on 2013年12月12日
 '''
 from django.conf.urls import patterns,url
 
-from . import views
+from accounts import views
 
 urlpatterns = patterns('',
     url(r'^logout$',views.logout_view,name="logout"),

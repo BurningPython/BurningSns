@@ -13,11 +13,11 @@ api_common_parm = "oauth_consumer_key=%s&access_token=%s&openid=%s&oauth_version
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
-from accounts.snsService.viewModels import *
+from accounts.platform.viewModels import *
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
-from accounts.snsService.handlers.baseHandler import *
+from accounts.platform.handlers.baseHandler import *
 
 
 class ts_utils(object):

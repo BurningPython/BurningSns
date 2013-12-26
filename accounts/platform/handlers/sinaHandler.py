@@ -12,9 +12,9 @@ __sitedomain = 'eleven.org.cn'
 import urllib
 import urllib.request
 import json
-from accounts.snsService.handlers.baseHandler import *
+from accounts.platform.handlers.baseHandler import *
 from django.core.exceptions import ObjectDoesNotExist
-from accounts.snsService.viewModels import Status
+from accounts.platform.viewModels import Status
 
 
 def show_json(j):

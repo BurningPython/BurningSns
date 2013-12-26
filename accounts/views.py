@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login as _login, logout
 from BurningSns.config import domain
-from accounts.snsService.tokenService import TokenService
-from accounts.snsService.oauthService import OpenAuthService
+from accounts.platform.tokenService import TokenService
+from accounts.platform.oauthService import OpenAuthService
 from accounts.models import User
 from accounts.forms import RegisterForm, LoginForm
 from accounts.utils import unparse_params, get_client_ip
@@ -81,7 +81,7 @@ def tw_oauth_confirm(request, action):
             openid = request.GET['openid']
             openkey = request.GET['openkey']
 
-            from accounts.snsService.handlers.tencentWeiboHandler import client_id, client_secret
+            from accounts.platform.handlers.tencentWeiboHandler import client_id, client_secret
 
             access_token_url = "https://open.t.qq.com/cgi-bin/oauth2/access_token?"\
                                + "client_id=%s&client_secret=%s&redirect_uri=%s&gra"\
@@ -134,7 +134,7 @@ def tw_oauth_request(request, action):
 
     redirect_uri = domain + reverse("account:tw_oauth_confirm", kwargs = {"action":action})
 
-    from .snsService.handlers.tencentWeiboHandler import client_id
+    from accounts.platform.handlers.tencentWeiboHandler import client_id
 
     url = request_code % (client_id, redirect_uri, state)
 

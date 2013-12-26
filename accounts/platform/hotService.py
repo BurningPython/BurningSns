@@ -7,9 +7,9 @@
 
 """
 
-from accounts.snsService.handlers.sinaHandler import SinaHandler
-from accounts.snsService.handlers.tencentWeiboHandler import TencentWeiboHandler
-from accounts.snsService.handlers.baseHandler import DataResponse
+from accounts.platform.handlers.sinaHandler import SinaHandler
+from accounts.platform.handlers.tencentWeiboHandler import TencentWeiboHandler
+from accounts.platform.handlers.baseHandler import DataResponse
 
 
 #todo 所有Service接口都没有去实现排序功能,所以之后要补上

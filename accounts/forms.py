@@ -5,7 +5,7 @@ Created on 2013年12月16日
 """
 from django import forms
 
-from .models import User
+from accounts.models import User
 
 
 class LoginForm(forms.Form):
