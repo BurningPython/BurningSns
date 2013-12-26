@@ -12,9 +12,9 @@ __sitedomain = 'eleven.org.cn'
 import urllib
 import urllib.request
 import json
+from accounts.snsService.handlers.baseHandler import *
 from django.core.exceptions import ObjectDoesNotExist
 from accounts.snsService.viewModels import Status
-from .baseHandler import *
 
 
 def show_json(j):
@@ -28,17 +28,17 @@ class SinaHandler(BaseHandler):
     """Interface Of SNS Module"""
     user = ""                    #HTTP包中的用户
 
-    StatusService = ""
-    CommentsService = ""
-    FavouritesService = ""
-    ShortUrlsService = ""
+    statusService = ""
+    commentsService = ""
+    favouritesService = ""
+    shortUrlsService = ""
 
     def __init__(self, user):
         super(BaseHandler, self).__init__()
-        self.StatusService = StatusService(user)
-        self.CommentsService = CommentsService(user)
-        self.FavouritesService = FavouritesService(user)
-        self.ShortUrlsService = ShortUrlsService(user)
+        self.statusService = StatusService(user)
+        self.commentsService = CommentsService(user)
+        self.favouritesService = FavouritesService(user)
+        self.shortUrlsService = ShortUrlsService(user)
 
 #微博服务
 class StatusService(IStatusService):
@@ -78,7 +78,7 @@ class StatusService(IStatusService):
         statuses = []
         for status in j["statuses"]:
             statuses.append(self.toStatus(status))
-        return statuses
+        return DataResponse(data=statuses)
 
     def repost_status(self, statusid, **parms):        #转发
         parms['id'] = statusid
@@ -120,6 +120,8 @@ class StatusService(IStatusService):
         for key, value in j.items():
             print("key:%s, value:%s" % (key, value))
             setattr(instance, key, value)
+        import datetime
+        instance.created_at = datetime.datetime.now()
         return instance
 
     #序列化
