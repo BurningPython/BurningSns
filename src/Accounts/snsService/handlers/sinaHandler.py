@@ -13,8 +13,9 @@ import urllib
 import urllib.request
 import json
 from django.core.exceptions import ObjectDoesNotExist
-from accounts.models import Status,Comment
+from accounts.snsService.viewModels import Status
 from .baseHandler import *
+
 
 def show_json(j):
     print(json.dumps(j, indent = 4, separators = (',', ':')))
@@ -33,6 +34,7 @@ class SinaHandler(BaseHandler):
     ShortUrlsService = ""
 
     def __init__(self, user):
+        super(BaseHandler, self).__init__()
         self.StatusService = StatusService(user)
         self.CommentsService = CommentsService(user)
         self.FavouritesService = FavouritesService(user)
@@ -78,17 +80,17 @@ class StatusService(IStatusService):
             statuses.append(self.toStatus(status))
         return statuses
 
-    def Repost(self, statusid, **parms):        #转发
+    def repost_status(self, statusid, **parms):        #转发
         parms['id'] = statusid
         parms['method'] = 'post'
         return self.get_json(self.__url_news_repost, parms)
 
-    def destroy(self, statusid, **parms):        #删除
+    def destory_status(self, statusid, **parms):        #删除
         parms['id'] = statusid
         parms['method'] = 'post'
         return self.get_json(self.__url_news_destory, parms)
 
-    def Update(self, content, **parms):        #发一条说说
+    def update_status(self, content, **parms):        #发一条说说
         parms['status'] = content
         parms['method'] = 'post'
         return self.get_json(self.__url_news_update, parms)
@@ -130,12 +132,13 @@ class StatusService(IStatusService):
 
     #反序列化
     def dict2object(d, classname):
-        module = __import__(Status.__module__, fromlist=(1))
+        module = __import__(Status.__module__, fromlist = (1))
         class_ = getattr(module, classname)
         instance = class_()
         for key, value in d.items():
             setattr(instance, key, value)
         return instance
+
 
 class CommentsService(ICommentService):    #评论服务
     __url_comments_show = 'https://api.weibo.com/2/comments/show.json'
@@ -163,22 +166,22 @@ class CommentsService(ICommentService):    #评论服务
         finally:
             self.__access_token = '2.00Fd85eCDVUEAD1aa8ae3efb0_C2bf'
 
-    def GetComments(self, statusid, **parms):
+    def get_comments(self, statusid, **parms):
         parms['id'] = statusid
         return self.get_json(self.__url_comments_show, parms)
 
-    def Create(self, statusid, comment, **parms):
+    def create_comment(self, statusid, comment, **parms):
         parms['method'] = 'post'
         parms['id'] = statusid
         parms['comment'] = comment
         return self.get_json(self.__url_comments_create, parms)
 
-    def Destory(self, commentid, **parms):
+    def destroy_comment(self, commentid, **parms):
         parms['cid'] = commentid
         parms['method'] = 'post'
         return self.get_json(self.__url_comments_destroy, parms)
 
-    def Reply(self, statusid, commentid, comment, **parms):
+    def replay_comment(self, statusid, commentid, comment, **parms):
         parms['method'] = 'post'
         parms['cid'] = commentid
         parms['id'] = statusid
@@ -234,19 +237,19 @@ class FavouritesService(IFavoriteService): #收藏服务
         finally:
             self.__access_token = '2.00Fd85eCDVUEAD1aa8ae3efb0_C2bf'
 
-    def GetFavorites(self, **parms):        #获取用户的所有
+    def get_favorites(self, **parms):        #获取用户的所有
         return self.get_json(self.__url_favorites, parms)
 
-    def GetFavorite(self, statusid, **parms):    #获取单条收藏
+    def get_favorite(self, statusid, **parms):    #获取单条收藏
         parms['id'] = statusid
         return self.get_json(self.__url_favorites_show, parms)
 
-    def Create(self, statusid, **parms):    #添加收藏
+    def create_favorite(self, statusid, **parms):    #添加收藏
         parms['method'] = 'post'
         parms['id'] = statusid
         return self.get_json(self.__url_favorites_create, parms)
 
-    def Destory(self, statusid, **parms):    #取消收藏
+    def destroy_favorite(self, statusid, **parms):    #取消收藏
         parms['method'] = 'post'
         parms['id'] = statusid
         return self.get_json(self.__url_favorites_destroy, parms)
@@ -320,25 +323,3 @@ class ShortUrlsService(IShortUrlService):
             return json.loads(html)
         else:
             pass
-
-
-class RemindService(object):            #通知服务
-    def __init__(self, user):
-        self.user = user
-
-    def GetUnread_count(user):            #获取所有未读记录
-        pass
-
-    def ClearUnRead(user):                    #清除所有未读记录
-        pass
-
-#管理Token，
-class TokenManager(object):
-    def AddToken(user, site, enable = True):            #增加一个Token
-        pass
-
-    def SetTokenDisable(user, site, enable = True):    #不启用
-        pass
-
-    def DeleteToken(user, site):                    #取消认证
-        pass
