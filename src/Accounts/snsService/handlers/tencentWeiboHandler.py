@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from .baseHandler import *
+from accounts.snsService.handlers.baseHandler import *
 
 
 class ts_utils(object):
@@ -24,12 +24,12 @@ class ts_utils(object):
     def get_api_data(api_name, token, method = "get", **params):
 
         base_url = api_url % api_name
-        common_parm = api_common_parm % (token.access_token, token.openid, client_id)
+        common_parm = api_common_parm % (client_id, token.access_token, token.openid)
         if method.lower() == "get":
             base_url += "?"
             api_param = ""
-            for key, value in params:
-                api_param += "&%s=%s" % (key, value)
+            for key in params:
+                api_param += "&%s=%s" % (key, params[key])
             target_url = base_url + common_parm + api_param
             ret = urlopen(target_url).read().decode("utf-8")
         else:
@@ -47,12 +47,12 @@ class TencentWeiboHandler(BaseHandler):
         """
         """
         super(BaseHandler, self).__init__()
-        self.statusService = StatusService(user)
-        self.commentsService = CommentsService(user)
-        self.favouritesService = FavouritesService(user)
+        self.statusService = TencentWeiboStatusService(user)
+        self.commentsService = TencentWeiboCommentService(user)
+        self.favouritesService = TencentWeiboFavoriteService(user)
 
 
-class StatusService(IStatusService):
+class TencentWeiboStatusService(IStatusService):
     """
     动态服务
     """
@@ -68,12 +68,53 @@ class StatusService(IStatusService):
     def GetFriendsStatuses(self, **params):
         """
         获取好友动态列表
+        format:     返回数据的格式（json或xml）
+        pageflag:   分页标识（0：第一页，1：向下翻页，2：向上翻页
+        pagetime:   本页起始时间（第一页：填0，向上翻页：填上一次请求返回的第一条记录时间，向下翻页：填上一次请求返回的最后一条记
+                    录时间）
+        reqnum:     每次请求记录的条数（1-70条）
+        type:       拉取类型（需填写十进制数字） 0x1 原创发表 0x2 转载 如需拉取多个类型请使用|，如(0x1|0x2)得到3,则type=3即可，
+                    填零表示拉取所有类型
+        contenttype:内容过滤。0-表示所有类型，1-带文本，2-带链接，4-带图片，8-带视频，0x10-带音频 建议不使用contenttype为1的类
+                    型，如果要拉取只有文本的微博，建议使用0x80
         """
         api_name = "statuses/home_timeline"
         params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
-        return ret_data
+        if not 'format' in params:
+            params['format'] = 'json'
+        if not 'pageflag' in params:
+            params['pageflag'] = '0'
+        if not 'pagetime' in params:
+            params['pagetime'] = '0'
+        if not 'reqnum' in params:
+            params['reqnum'] = '25'
+        if not 'type' in params:
+            params['type'] = '3'
+        if not 'contenttype' in params:
+            params['contenttype'] = '0'
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, **params)
+
+        ret = ret_data['ret']
+        code = ret_data['errcode']
+        message = ret_data['msg']
+        status_data = []
+
+        #ret=0 即为请求成功
+        if ret == 0:
+            data = ret_data['data']
+            for item in data:
+                try:
+                    status = data_to_status(item)
+                except:
+                    continue
+                else:
+                    status_data.append(status)
+        else:
+            pass
+
+        return DataResponse(ret,code,message,site="腾讯微博",data=status_data)
 
     def Repost(self, statusid, **params):
         """
@@ -113,7 +154,7 @@ class StatusService(IStatusService):
         return ret_data
 
 #评论服务
-class CommentsService(ICommentService):
+class TencentWeiboCommentService(ICommentService):
     """
 
     """
@@ -140,7 +181,7 @@ class CommentsService(ICommentService):
         pass
 
 #收藏服务
-class FavouritesService(IFavoriteService):
+class TencentWeiboFavoriteService(IFavoriteService):
     """
 
     """
@@ -167,6 +208,7 @@ class FavouritesService(IFavoriteService):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-
+def data_to_status(item):
+    return item
 if __name__ == '__main__':
     pass
