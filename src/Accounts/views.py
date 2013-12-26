@@ -75,7 +75,7 @@ def tw_oauth_confirm(request,action):
     if 'state' in request.GET:
         state = request.GET['state']
         #防止跨站伪造请求攻击
-        if (state == request.session['oauthState']):
+        if state == request.session['_oauth_state']:
 
             code = request.GET['code']
             openid = request.GET['openid']
@@ -127,7 +127,7 @@ def tw_oauth_request(request,action):
     import random
 
     state = random.randint(100000, 999999)
-    request.session["oauthState"] = str(state)
+    request.session['_oauth_state'] = str(state)
 
     request_code = "https://open.t.qq.com/cgi-bin/oauth2/authorize?"\
                    + "client_id=%s&response_type=code&redirect_uri=%s&state=%s"
