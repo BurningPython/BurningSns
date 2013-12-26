@@ -68,6 +68,7 @@ class StatusService(BaseHotService):
             else:
                 continue
 
+        retdata.data.sort(key=lambda status : status.created_at,reverse=True)
         return retdata
 
     def Repost(self, site, statusid, **params):

@@ -7,7 +7,7 @@ class Status(object):
         self.id = id
 
     site = ''                        #社交网站名称
-    created_at = ''                #微博穿件时间
+    created_at = ''                #微博创建时间
     id = 0                            #微博ID
     mid = 0                            #微博MID
     idstr = ''                        #字符串型的微博ID
