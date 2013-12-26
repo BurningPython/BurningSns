@@ -1,7 +1,5 @@
 '''
-
     少年，我知道这个传说中的封装真的很垃圾，但是我想了想还是觉得区域自治制度比较好，自己的区域还是归当地政府管，只要能向中央交钱就好了。
-
 '''
 __author__ = 'Mr.ELeven'
 __email__ = 'iGod_eleven@163.com'
@@ -14,11 +12,9 @@ __sitedomain = 'eleven.org.cn'
 import urllib
 import urllib.request
 import json
-
 from django.core.exceptions import ObjectDoesNotExist
-
+from accounts.models import Status,Comment
 from .baseHandler import *
-
 
 def show_json(j):
     print(json.dumps(j, indent = 4, separators = (',', ':')))
@@ -31,7 +27,7 @@ class SinaHandler(BaseHandler):
     """Interface Of SNS Module"""
     user = ""                    #HTTP包中的用户
 
-    StatusesService = ""
+    StatusService = ""
     CommentsService = ""
     FavouritesService = ""
     ShortUrlsService = ""
@@ -41,7 +37,6 @@ class SinaHandler(BaseHandler):
         self.CommentsService = CommentsService(user)
         self.FavouritesService = FavouritesService(user)
         self.ShortUrlsService = ShortUrlsService(user)
-
 
 #微博服务
 class StatusService(IStatusService):
@@ -77,7 +72,11 @@ class StatusService(IStatusService):
 
     def GetFriendsStatuses(self, **parms):            #获取好友动态列表
         print(self.__access_token)
-        return self.get_json(self.__url_news_getfriendsnews, parms)
+        j = self.get_json(self.__url_news_getfriendsnews, parms)
+        statuses = []
+        for status in j["statuses"]:
+            statuses.append(self.toStatus(status))
+        return statuses
 
     def Repost(self, statusid, **parms):        #转发
         parms['id'] = statusid
@@ -94,7 +93,7 @@ class StatusService(IStatusService):
         parms['method'] = 'post'
         return self.get_json(self.__url_news_update, parms)
 
-    def get_json(self, url, **parms):            #获取json,私有方法，请忽视
+    def get_json(self, url, parms):            #获取json,私有方法，请忽视
         try:
             method = parms['method']
         except Exception:
@@ -114,6 +113,29 @@ class StatusService(IStatusService):
         else:
             pass
 
+    def toStatus(self, j):
+        instance = Status(0)
+        for key, value in j.items():
+            print("key:%s, value:%s" % (key, value))
+            setattr(instance, key, value)
+        return instance
+
+    #序列化
+    def object2dict(obj):
+        d = {}
+        d['__class__'] = obj.__class__.__name__
+        d['__module__'] = obj.__module__
+        d.update(obj.__dict__)
+        return d
+
+    #反序列化
+    def dict2object(d, classname):
+        module = __import__(Status.__module__, fromlist=(1))
+        class_ = getattr(module, classname)
+        instance = class_()
+        for key, value in d.items():
+            setattr(instance, key, value)
+        return instance
 
 class CommentsService(ICommentService):    #评论服务
     __url_comments_show = 'https://api.weibo.com/2/comments/show.json'
