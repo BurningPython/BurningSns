@@ -12,5 +12,5 @@ def content_view(request):
     return render(
         request,
         "website/content.html",
-        {'user': user, 'timelinecontent': ret.data,'errors':ret.errors}
+        {'user': user, 'timelinecontent': ret.data,'errors':ret.errors},
     )
