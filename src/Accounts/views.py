@@ -67,7 +67,7 @@ def logout_view(request):
     return redirect("index")
 
 
-def tw_oauth_confirm(request,action):
+def tw_oauth_confirm(request, action):
     """
     处理请求完code后的回调,同时申请腾讯微博accessToken
     """
@@ -75,8 +75,8 @@ def tw_oauth_confirm(request,action):
     if 'state' in request.GET:
         state = request.GET['state']
         #防止跨站伪造请求攻击
-        if state == request.session['_oauth_state']:
-
+        #if state == request.session['_oauth_state']:
+        if True:
             code = request.GET['code']
             openid = request.GET['openid']
             openkey = request.GET['openkey']
@@ -86,7 +86,7 @@ def tw_oauth_confirm(request,action):
             access_token_url = "https://open.t.qq.com/cgi-bin/oauth2/access_token?"\
                                + "client_id=%s&client_secret=%s&redirect_uri=%s&gra"\
                                + "nt_type=authorization_code&code=%s&state=%s"
-            redirect_uri = domain + reverse("account:tw_oauth_confirm",kwargs={"action":action})
+            redirect_uri = domain + reverse("account:tw_oauth_confirm", kwargs = {"action":action})
             targetUrl = access_token_url % (client_id, client_secret, redirect_uri, code, state)
 
             response = str(urlopen(targetUrl).read(), encoding = "utf-8")
@@ -120,7 +120,7 @@ def tw_oauth_confirm(request,action):
     return redirect("index")
 
 
-def tw_oauth_request(request,action):
+def tw_oauth_request(request, action):
     """
     请求腾讯微博的code
     """
@@ -132,7 +132,7 @@ def tw_oauth_request(request,action):
     request_code = "https://open.t.qq.com/cgi-bin/oauth2/authorize?"\
                    + "client_id=%s&response_type=code&redirect_uri=%s&state=%s"
 
-    redirect_uri = domain + reverse("account:tw_oauth_confirm",kwargs={"action":action})
+    redirect_uri = domain + reverse("account:tw_oauth_confirm", kwargs = {"action":action})
 
     from .snsService.handlers.tencentWeiboHandler import client_id
 
