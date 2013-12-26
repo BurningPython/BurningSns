@@ -70,7 +70,7 @@ class StatusService(IStatusService):
         finally:
             self.__access_token = '2.00Fd85eCDVUEAD1aa8ae3efb0_C2bf'
 
-    def GetFriendsStatuses(self, **parms):            #获取好友动态列表
+    def get_friends_statuses(self, **parms):            #获取好友动态列表
         print(self.__access_token)
         j = self.get_json(self.__url_news_getfriendsnews, parms)
         statuses = []
@@ -83,7 +83,7 @@ class StatusService(IStatusService):
         parms['method'] = 'post'
         return self.get_json(self.__url_news_repost, parms)
 
-    def Destroy(self, statusid, **parms):        #删除
+    def destroy(self, statusid, **parms):        #删除
         parms['id'] = statusid
         parms['method'] = 'post'
         return self.get_json(self.__url_news_destory, parms)

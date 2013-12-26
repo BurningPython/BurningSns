@@ -1,0 +1,515 @@
+
+{% for status in statuses %}
+    <div>{{ status.text }}</div>
+{% endfor %}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+            font: 12px/1.125 Arial,Helvetica,sans-serif;
+        }
+
+        a {
+            color: #0a8cd2;
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        .bigdiv {
+            width: 600px;
+            padding: 20px;
+            background: white;
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        .WB_text {
+            clear: both;
+            line-height: 23px;
+            font-size: 14px;
+        }
+
+        .WB_handle {
+            float: right;
+            zoom: 1;
+        }
+
+        .WB_from {
+            /*float:left;*/
+            margin: 0 7px 0 0;
+        }
+
+        .WB_time {
+            margin: 0 7px 0 0;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        .WB_feed_type {
+            /*border:1px solid black;*/
+            padding: 30px 0 0;
+            clear: both;
+            margin: -1px 0 0;
+            border-bottom: 1px solid;
+        }
+
+        .WB_media_expand {
+            background: #ccc;
+            margin: 5px 0 15px;
+            border-radius: 3px;
+            border-width: 1px;
+            padding: 10px 20px 10px;
+            border-style: solid;
+            background: #f2f2f2;
+        }
+
+        .WB_feed_datail {
+            clear: both;
+            padding: 0 0 11px;
+        }
+
+        .WB_screen {
+            margin: -10px 0 0 544px;
+            position: absolute;
+            background: Red;
+            width: 16px;
+            height: 16px;
+        }
+
+        .WB_detail {
+            color: #333;
+            zoom: 1;
+            display: block;
+        }
+
+        .S_txt2 {
+            color: #808080;
+            font-style: normal;
+            font-weight: normal;
+        }
+
+        .S_txt3 {
+            margin: 0 6px 0 8px;
+        }
+
+        .S_line2 {
+            border-color: #e6e6e6;
+        }
+
+        .WB_info {
+            color: #333;
+        }
+
+        .WB_name {
+            color: #333;
+            text-decoration: none;
+            font-size: 12px;
+            line-height: 21px;
+            zoom: 1;
+        }
+        .WB_arrow {
+            margin: -18px 0 0;
+            width: 22px;
+            cursor: default;
+            z-index: 0;
+            position: absolute;
+            overflow: hidden;
+            font-family: "SimSun";
+            line-height: 1.231;
+            font-size: 12px;
+            display: block;
+            height: 12px;
+        }
+        .WB_arrow span {
+            margin-left: -11px;
+        }
+    </style>
+</head>
+<body style="padding: 0px;">
+    <div class="bigdiv">
+        <div class="WB_feed WB_feed_self" pagenum="" node-type="feed_list" module-type="feed" style="width: 560px;">
+
+            {% for status in statuses %}
+            <div tbinfo="ouid=2429145187" action-type="feed_list_item" mid="{{ status.mid }}" class="WB_feed_type SW_fun S_line2">
+                <div class="WB_screen" style="background: pink;">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content" nick-name="{{ status.user.screen_name }}">
+                            {{ status.text }}
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="q1" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid={{ status.text }}"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读200次">阅读(200)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3658035069548036" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3658035069548036&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;url=http://weibo.com/2429145187/AolKWE3SA&amp;mid=3658035069548036&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发(7)</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论(7)</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3658035069548036" target="_blank" href="/2429145187/AolKWE3SA?mod=weibotime" title="2013-12-21 19:56" date="1387626985000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 19:56</a> <em class="S_txt2">来自</em>未通过审核应用
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div tbinfo="ouid=2429145187" action-type="feed_list_item" mid="{{ status.mid }}" class="WB_feed_type SW_fun S_line2">
+                <div class="WB_screen" style="background: pink;">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content" nick-name="烤_鸡_饭">
+                            孩子感冒老不好，多半是装的，打一顿就好了。                     
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="q1" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid=3658035069548036"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读200次">阅读(200)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3658035069548036" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3658035069548036&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;url=http://weibo.com/2429145187/AolKWE3SA&amp;mid=3658035069548036&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发(7)</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论(7)</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3658035069548036" target="_blank" href="/2429145187/AolKWE3SA?mod=weibotime" title="2013-12-21 19:56" date="1387626985000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 19:56</a> <em class="S_txt2">来自</em>未通过审核应用                                   
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+            <div tbinfo="ouid=2429145187" action-type="feed_list_item" mid="3658034809456527" class="WB_feed_type SW_fun S_line2 ">
+                <div class="WB_screen">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content" nick-name="烤_鸡_饭">
+                            如果你也听说                       
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="Div1" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid=3658034809456527"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读38次">阅读(38)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3658034809456527" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3658034809456527&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;url=http://weibo.com/2429145187/AolKwDG4D&amp;mid=3658034809456527&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3658034809456527" target="_blank" href="/2429145187/AolKwDG4D?mod=weibotime" title="2013-12-21 19:55" date="1387626923000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 19:55</a> <em class="S_txt2">来自</em>未通过审核应用                                   
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div minfo="ru=1729637993&amp;rm=3657983269085711" tbinfo="ouid=2429145187&amp;rouid=1729637993" action-type="feed_list_item" mid="3658033563445774" isforward="1" omid="3657983269085711" class="WB_feed_type SW_fun S_line2 ">
+                <div class="WB_screen">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content">
+                            转发微博                       
+                        </div>
+                        <div class="WB_media_expand SW_fun2 S_line1 S_bg1">
+                            <div class="WB_arrow"><em class="S_line1_c">◆</em><span class="S_bg1_c">◆</span></div>
+                            <div node-type="feed_list_forwardContent">
+                                <div class="WB_info">
+                                    <a node-type="feed_list_originNick" class="WB_name S_func3" nick-name="360手机卫士" href="/360mobilesafe" title="360手机卫士" usercard="id=1729637993">@360手机卫士</a><a target="_blank" href="http://verified.weibo.com/verify"><i title="新浪机构认证" class="W_ico16 approve_co"></i></a>
+                                </div>
+                                <div class="WB_text" node-type="feed_list_reason">
+                                    <em>他在外喝酒，她来电话。女，在哪在干嘛呢？ 男，老子在喝酒，少来烦老子。女，你今天怎么这样啊？男，好了少废话了挂了。她在抱着手机伤心的时候，短信来了，媳妇我错了，这么多兄弟呢，我装装逼，回来就跪搓衣板。。。（转）</em>
+                                </div>
+                            </div>
+                            <div node-type="feed_list_media_prev">
+                                <!-- 该模板和media.phtml如此之相像……有时间的话可以合并之，需注意ifForward="1"，其他几乎相同 -->
+
+                                <!-- 微博心情，独立于标准的ul节点 -->
+
+                                <!-- 特型广告feed -->
+                                <ul class="WB_media_list clearfix">
+                                    <li>
+                                        <!-- img之间不能加空格 -->
+                                        <div class="chePicMin S_bg2 bigcursor" action-type="feed_list_media_img" action-data="uid=1729637993&amp;mid=3657983269085711&amp;pid=67182e69jw1ebreopxazrj20720e00th&amp;pic_objects=67182e69jw1ebreopxazrj20720e00th%7C0%7C580%7C1042018%3A17479414fde46d3ffc57bddb3f6635e7" suda-data="key=feed_image_click&amp;value=image_zoomin">
+                                            <img class="bigcursor" node-type="feed_list_media_bgimg" src="http://ww3.sinaimg.cn/thumbnail/67182e69jw1ebreopxazrj20720e00th.jpg" alt=""><img style="left: 39.5px; top: 52px; display: none;" src="http://img.t.sinajs.cn/t5/style/images/common/loading.gif" class="loading_gif">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="expand" style="display: none;" node-type="feed_list_media_disp"></div>
+                            <div class="WB_func clearfix">
+                                <div class="WB_handle" mid="3657983269085711">
+                                    <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3657983269085711" title="赞"><em class="W_ico20 icon_praised_b"></em>(546)</a><i class="S_txt3">|</i>
+                                    <a class="S_func4" action-history="rec=1" href="/1729637993/AokpoC7BJ?type=repost">转发(1341)</a>
+                                    <em class="S_txt3">|</em>
+                                    <a class="S_func4" href="/1729637993/AokpoC7BJ">评论(149)</a>
+                                </div>
+                                <div class="WB_from">
+                                    <a class="S_func2 WB_time" target="_blank" href="/1729637993/AokpoC7BJ" title="2013-12-21 16:30" date="1387614635000" node-type="feed_list_item_date">12月21日 16:30</a><em class="S_txt2">来自</em><a class="S_func2" action-type="app_source" target="_blank" href="http://app.weibo.com/t/feed/29mNZV" rel="nofollow">360手机卫士</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="Div2" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid=3658033563445774"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读46次">阅读(46)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3658033563445774" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3658033563445774&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;rootmid=3657983269085711&amp;rootname=360手机卫士&amp;rootuid=1729637993&amp;rooturl=http://weibo.com/1729637993/AokpoC7BJ&amp;url=http://weibo.com/2429145187/AolIwesp0&amp;mid=3658033563445774&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=360mobilesafe&amp;pid=67182e69jw1ebreopxazrj20720e00th" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3658033563445774" target="_blank" href="/2429145187/AolIwesp0?mod=weibotime" title="2013-12-21 19:50" date="1387626627000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 19:50</a> <em class="S_txt2">来自</em>未通过审核应用                                   
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            <div tbinfo="ouid=2429145187" action-type="feed_list_item" mid="3657989355609036" class="WB_feed_type SW_fun S_line2 ">
+                <div class="WB_screen">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content" nick-name="烤_鸡_饭">
+                            微博来自API测试工具                       
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="Div3" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid=3657989355609036"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读102次">阅读(102)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3657989355609036" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3657989355609036&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;url=http://weibo.com/2429145187/Aokzdnxak&amp;mid=3657989355609036&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3657989355609036" target="_blank" href="/2429145187/Aokzdnxak?mod=weibotime" title="2013-12-21 16:54" date="1387616087000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 16:54</a> <em class="S_txt2">来自</em>未通过审核应用                                   
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            <div minfo="ru=1761179351&amp;rm=3657898577796028" tbinfo="ouid=2429145187&amp;rouid=1761179351" action-type="feed_list_item" mid="3657927070538856" isforward="1" omid="3657898577796028" class="WB_feed_type SW_fun S_line2 ">
+                <div class="WB_screen">
+                    <a href="javascript:void(0);" class="W_ico12 icon_choose" action-type="fl_menu"></a>
+                    <div class="layer_menu_list" style="display: none; position: absolute; z-index: 999;" node-type="fl_menu_right">
+                        <ul>
+                            <li><a title="删除此条微博" href="javascript:void(0);" action-type="feed_list_delete">删除</a></li>
+                            <li><a action-type="fl_setToTop" href="javascript:void(0);" title="在微博区域置顶显示">置顶</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="WB_feed_datail S_line2 clearfix">
+                    <div class="WB_detail">
+                        <div class="WB_text" node-type="feed_list_content">
+                            转发微博                       
+                        </div>
+                        <div class="WB_media_expand SW_fun2 S_line1 S_bg1">
+                            <div class="WB_arrow"><em class="S_line1_c">◆</em><span class="S_bg1_c">◆</span></div>
+                            <div node-type="feed_list_forwardContent">
+                                <div class="WB_info">
+                                    <a node-type="feed_list_originNick" class="WB_name S_func3" nick-name="留几手" href="/nimui" title="留几手" usercard="id=1761179351">@留几手</a><a title="微博会员" target="_blank" href="http://vip.weibo.com/personal?from=main" action-type="ignore_list"><i class="W_ico16 ico_member"></i></a>
+                                </div>
+                                <div class="WB_text" node-type="feed_list_reason">
+                                    <em>没有谁是不可取代的</em>
+                                </div>
+                            </div>
+                            <div node-type="feed_list_media_prev">
+                                <!-- 该模板和media.phtml如此之相像……有时间的话可以合并之，需注意ifForward="1"，其他几乎相同 -->
+
+                                <!-- 微博心情，独立于标准的ul节点 -->
+
+                                <!-- 特型广告feed -->
+                                <ul class="WB_media_list clearfix">
+                                    <li>
+                                        <!-- img之间不能加空格 -->
+                                        <div class="chePicMin S_bg2 bigcursor" action-type="feed_list_media_img" action-data="uid=1761179351&amp;mid=3657898577796028&amp;pid=68f976d7tw1ebr4xuso1qj20c81f9akj&amp;pic_objects=68f976d7tw1ebr4xuso1qj20c81f9akj%7C0%7C11656%7C1042018%3Ace00d8f35a02477dcd3d8319ecd725e2" suda-data="key=feed_image_click&amp;value=image_zoomin">
+                                            <img class="bigcursor" node-type="feed_list_media_bgimg" src="http://ww2.sinaimg.cn/thumbnail/68f976d7tw1ebr4xuso1qj20c81f9akj.jpg" alt=""><img style="left: 39.5px; top: 52px; display: none;" src="http://img.t.sinajs.cn/t5/style/images/common/loading.gif" class="loading_gif">
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="expand" style="display: none;" node-type="feed_list_media_disp"></div>
+                            <div class="WB_func clearfix">
+                                <div class="WB_handle" mid="3657898577796028">
+                                    <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3657898577796028" title="赞"><em class="W_ico20 icon_praised_b"></em>(8820)</a><i class="S_txt3">|</i>
+                                    <a class="S_func4" action-history="rec=1" href="/1761179351/AoicNwI6o?type=repost">转发(46500)</a>
+                                    <em class="S_txt3">|</em>
+                                    <a class="S_func4" href="/1761179351/AoicNwI6o">评论(4720)</a>
+                                </div>
+                                <div class="WB_from">
+                                    <a class="S_func2 WB_time" target="_blank" href="/1761179351/AoicNwI6o" title="2013-12-21 10:54" date="1387594444000" node-type="feed_list_item_date">12月21日 10:54</a><em class="S_txt2">来自</em><a class="S_func2" action-type="app_source" target="_blank" href="http://weibo.com/" rel="nofollow">新浪微博</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="feed_tag_list_form clearfix" node-type="feed_list_tagList" style="display: none">
+                            <div class="ftlf_right">
+                                <div class="ftlf_r_left">
+                                    <div class="wTablist2 S_line1 S_link2 S_txt2" id="Div4" style="display: none;">
+                                        <a href="javascript:void(0);" class="W_ico12 icon_edit" title="编辑这条微博的标签" _taglist="" node-type="feed_list_editTag" action-type="fl_addTag" action-data="mid=3657927070538856"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="WB_func clearfix">
+                            <div class="WB_handle">
+                                <i class="S_txt2" title="此条微博已经被阅读64次">阅读(64)</i>&nbsp;
+                                                                                                                                <a href="javascript:void(0);" action-type="fl_pop" action-data="mid=3657927070538856" suda-uatrack="key=tblog_fans_top&amp;value=chick_fans_top">推广</a>
+                                <i class="S_txt3">|</i>
+                                <a href="javascript:void(0);" action-type="fl_like" action-data="version=mini&amp;qid=heart&amp;mid=3657927070538856&amp;loc=profile" title="赞"><em class="W_ico20 icon_praised_b"></em></a><i class="S_txt3">|</i>
+                                <a action-data="allowForward=1&amp;rootmid=3657898577796028&amp;rootname=留几手&amp;rootuid=1761179351&amp;rooturl=http://weibo.com/1761179351/AoicNwI6o&amp;url=http://weibo.com/2429145187/AoiWL2gbe&amp;mid=3657927070538856&amp;name=烤_鸡_饭&amp;uid=2429145187&amp;domain=nimui&amp;pid=68f976d7tw1ebr4xuso1qj20c81f9akj" action-type="fl_forward" action-history="rec=1" href="javascript:void(0);">转发(1)</a><em class="S_txt3">|</em>
+                                <a suda-data="key=smart_feed&amp;value=time_sort_collect" href="javascript:void(0);" diss-data="fuid=2429145187" action-type="fl_favorite">收藏</a><i class="S_txt3">|</i>
+
+                                <a suda-data="key=smart_feed&amp;value=time_sort_comm" href="javascript:void(0);" action-type="fl_comment" action-data="ouid=2429145187&amp;location=">评论(1)</a>
+                            </div>
+                            <div class="WB_from">
+                                <a name="3657927070538856" target="_blank" href="/2429145187/AoiWL2gbe?mod=weibotime" title="2013-12-21 12:47" date="1387601237000" class="S_link2 WB_time" node-type="feed_list_item_date" suda-data="key=tblog_home_new&amp;value=feed_time">12月21日 12:47</a> <em class="S_txt2">来自</em><a class="S_link2" suda-data="key=tblog_home_new&amp;value=feed_come_from" action-type="app_source" target="_blank" href="http://app.weibo.com/t/feed/69yt1V" rel="nofollow">新浪微博</a>
+                            </div>
+                        </div>
+                        <div node-type="feed_list_repeat" class="WB_media_expand repeat S_line1 S_bg4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--翻页-->
+            <a bpfilter="page" class="PRF_feed_list_more SW_fun_bg S_line2" href="/p/1005052429145187/weibo?from=page_100505_home&amp;wvr=5.1&amp;mod=weibomore#3657927070538856"><span>查看更多微博»</span></a>
+            <!--/翻页-->
+        </div>
+    </div>
+</body>
+</html>

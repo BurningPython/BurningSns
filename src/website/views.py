@@ -14,3 +14,18 @@ def content_view(request):
         "website/content.html",
         {'user': user, 'timelinecontent': ret.data,'errors':ret.errors},
     )
+
+def statuses_view(request):
+    user = request.user
+    user.username = 'Eleven'
+    sina = SinaHandler(user)
+    statuses = sina.StatusService.GetFriendsStatuses(count=2)
+    #if not user.is_authenticated():
+    #    return HttpResponseRedirect("index")
+    #service = StatusService(user)
+    #if service:
+    #    content = service.GetFriendsStatuses()
+    #else:
+    #    content = None
+    #content = None
+    return render(request, "website/statuses.html", {'user':user,'statuses': statuses})
