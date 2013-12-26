@@ -13,6 +13,7 @@ class Status(object):
     idstr = ''                        #字符串型的微博ID
     text = ''                        #微博信息内容
     source = ''                        #微博来源
+    source_url =''                  #来源url
     favorited = False                #是否已收藏
     truncated = False                #是否被截断
     in_reply_to_status_id = ''        #回复ID
@@ -23,7 +24,9 @@ class Status(object):
     bmiddle_pic = ''                    #中等尺寸图片地址，没有时不返回此字段
     original_pic = ''                #原始图片地址，没有时不返回此字段
     geo = ''                        #地理信息字段 详细
-    user = ''                        #微博作者的用户信息字段 详细
+    user = ''                        #微博作者的用户名字段 详细
+    nick = ''                       #用户的昵称
+    head_pic = ''                   #用户头像
     retweeted_status = ''            #被转发的原微博信息字段，当该微博为转发微博时返回 详细
     reposts_count = 0                #转发数
     comments_count = 0                #评论数
@@ -32,7 +35,7 @@ class Status(object):
     visible = 0                    #微博的可见性及指定可见分组信息。该object中type取值，0：普通微博，1：私密微博，3：指定分组微博，4：密友微博；list_id为分组的组号
     pic_urls = ''                    #微博配图地址。多图时返回多图链接。无配图返回“[]”
     ad = []                            #微博流内的推广微博ID
-
+    is_self = False                    #是否是自己发的微博
 
 class Comment(object):
     """docstring for Comment"""

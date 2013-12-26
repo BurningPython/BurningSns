@@ -13,8 +13,9 @@ api_common_parm = "oauth_consumer_key=%s&access_token=%s&openid=%s&oauth_version
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
-
+from accounts.snsService.viewModels import *
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
 
 from accounts.snsService.handlers.baseHandler import *
 
@@ -104,7 +105,7 @@ class TencentWeiboStatusService(IStatusService):
         #ret=0 即为请求成功
         if ret == 0:
             data = ret_data['data']
-            for item in data:
+            for item in data['info']:
                 try:
                     status = data_to_status(item)
                 except:
@@ -208,7 +209,39 @@ class TencentWeiboFavoriteService(IFavoriteService):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-def data_to_status(item):
-    return item
+def data_to_status(data):
+    status = Status(data['id'])
+
+    status.site = "腾讯微博"
+    status.created_at = datetime.fromtimestamp(data['timestamp'])#微博创建时间
+    status.mid = 0                            #微博MID
+    status.idstr = ''                        #字符串型的微博ID
+    status.text = data['text']                       #微博信息内容
+    status.source = data['from']                        #微博来源
+    status.source_url = data['fromurl']
+    status.favorited = None                #是否已收藏
+    status.truncated = False                #是否被截断
+    status.in_reply_to_status_id = ''        #回复ID
+    status.in_reply_to_user_id = ''        #回复人UID
+    status.in_reply_to_screen_name = ''    #回复人昵称
+    status.thumbnail_pic = ''                #缩略图地址,没有时不返回此字段
+
+    status.bmiddle_pic = ''                    #中等尺寸图片地址，没有时不返回此字段
+    status.original_pic = ''                #原始图片地址，没有时不返回此字段
+    status.geo = data['geo']                        #地理信息字段 详细
+    status.user = data['name']                        #微博作者的用户信息字段 详细
+    status.nick = data['nick']
+    status.head_pic = data['head'] + "/50''"
+    status.retweeted_status = data['origtext']            #被转发的原微博信息字段，当该微博为转发微博时返回 详细
+    status.reposts_count = data['count']                 #转发数
+    status.comments_count = data['mcount']               #评论数
+    status.attitudes_count = 0                #表态数
+    status.mlevel = 0                        #暂未支持
+    status.visible = 0                    #微博的可见性及指定可见分组信息。该object中type取值，0：普通微博，1：私密微博，3：指定分组微博，4：密友微博；list_id为分组的组号
+    status.pic_urls = data['image']                    #微博配图地址。多图时返回多图链接。无配图返回“[]”
+    status.ad = []                            #微博流内的推广微博ID
+    if data['self'] == 0:
+        status.is_self =True
+    return status
 if __name__ == '__main__':
     pass

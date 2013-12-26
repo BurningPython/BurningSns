@@ -7,4 +7,4 @@
     </form>
 </fieldset>
 <a href= {% url 'account:register' %}>注册</a>
-<a href= {% url 'account:tw_oauth_request' %}>使用腾讯微博登陆</a>
+<a href= {% url 'account:tw_oauth_request' action='login'%}>使用腾讯微博登陆</a>
