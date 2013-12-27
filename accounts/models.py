@@ -100,7 +100,7 @@ class OpenAuth(models.Model):
     enable = models.BooleanField(default = True)
 
     @property
-    def isOverdue(self):
+    def is_overdue(self):
         """
         是否已经过期
         """
@@ -113,14 +113,14 @@ class OpenAuth(models.Model):
             return False
 
     @property
-    def isOverdueSoon(self):
+    def is_overdue_soon(self):
         """
         是否将在3天内过期
         """
         now = datetime.now()
         delta = datetime.timedelta(days = 3, seconds = self.expires_in)
 
-        if (not self.isOverdue) and (self.update_on + delta >= now):
+        if (not self.is_overdue) and (self.update_on + delta >= now):
             return True
         else:
             return False
