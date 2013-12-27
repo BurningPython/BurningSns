@@ -22,7 +22,8 @@ def statuses_view(request):
     sina = SinaHandler(user)
     statuses = sina.statusService.get_friends_statuses(count=20)
     statuses = statuses.data
-    #if not user.is_authenticated():
+
+    # if not user.is_authenticated():
     #    return HttpResponseRedirect("index")
     #service = StatusService(user)
     #if service:
