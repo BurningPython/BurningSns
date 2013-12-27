@@ -12,8 +12,10 @@ __sitedomain = 'eleven.org.cn'
 import urllib
 import urllib.request
 import json
-from accounts.platform.handlers.baseHandler import *
+
 from django.core.exceptions import ObjectDoesNotExist
+
+from accounts.platform.handlers.baseHandler import *
 from accounts.platform.viewModels import Status
 
 
@@ -73,6 +75,10 @@ class StatusService(IStatusService):
             self.__access_token = '2.00Fd85eCDVUEAD1aa8ae3efb0_C2bf'
 
     def get_friends_statuses(self, **parms):            #获取好友动态列表
+        if 'last_data' in parms:
+            parms['max_id'] = parms['last_data'].mid
+            print(parms['last_data'].created_at)
+        parms['count'] = 20
         print(self.__access_token)
         j = self.get_json(self.__url_news_getfriendsnews, parms)
         statuses = []
@@ -105,23 +111,30 @@ class StatusService(IStatusService):
             querystring = '?access_token=' + self.__access_token
             for k in parms.keys():
                 querystring += '&' + k + '=' + str(parms[k])
-            html = urllib.request.urlopen(url + querystring).read().decode('utf8')
+            print(url + querystring)
+            try:
+                html = urllib.request.urlopen(url + querystring).read().decode('utf8')
+            except:
+                print("error current")
+                return {}
             return json.loads(html)
         elif method == 'post':
             parms['access_token'] = self.__access_token
             querystring = urllib.parse.urlencode(parms)
+            print(url + querystring)
             html = urllib.request.urlopen(url, data = bytes(querystring.encode('utf8'))).read().decode('utf8')
             return json.loads(html)
         else:
             pass
 
     def toStatus(self, j):
+        print(j["created_at"])
         instance = Status(0)
         for key, value in j.items():
-            print("key:%s, value:%s" % (key, value))
             setattr(instance, key, value)
         import datetime
-        instance.created_at = datetime.datetime.now()
+
+        instance.created_at = datetime.datetime.strptime(instance.created_at, "%a %b %d %H:%M:%S +0800 %Y")
         return instance
 
     #序列化

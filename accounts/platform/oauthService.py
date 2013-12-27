@@ -64,10 +64,17 @@ class OpenAuthService(object):
         #目前暂时这么处理
         except ObjectDoesNotExist:
             #创建用户
-            email = self.name + "@temp.com"
-            #password = random.randint(100000,999999)
+            username = ""
+            email = ""
+            if self.name:
+                username = self.name
+                email = self.name + "@temp.com"
+            else:
+                username = self.openid
+                email = self.openid + "@temp.com"
+                #password = random.randint(100000,999999)
             password = "123456"
-            new_user = User.objects.create(username = self.name, email = email, nickname = self.nick)
+            new_user = User.objects.create(username=username, email=email, nickname=self.nick)
             new_user.set_password(password)
             new_user.save()
             #绑定到社交网络

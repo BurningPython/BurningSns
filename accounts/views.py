@@ -1,3 +1,4 @@
+#encoding="utf8"
 from urllib.request import urlopen
 
 from django.shortcuts import render, redirect
@@ -142,11 +143,13 @@ def sw_oauth_confirm(request):
     """
     处理请求完code后的回调,同时申请腾讯微博accessToken
     """
+    #if request.GET["state"] != request.session['sw_oauth_state']:
+    #    print(request.GET["state"])
     a = {}
     a['client_id'] = '2749469053'
     a['client_secret'] = '22a991ef6b614ebc2bcb75555b5a1aec'
     a['grant_type'] = 'authorization_code'
-    a['redirect_uri'] = domain + reverse("account:sw_oauth_confirm", kwargs = {})
+    a['redirect_uri'] = 'http://127.0.0.1:8080/account/sw_oauth_confirm'
     a['code'] = request.GET["code"]
     import urllib.request
     import urllib.parse
@@ -154,22 +157,27 @@ def sw_oauth_confirm(request):
 
     querystring = urllib.parse.urlencode(a)
     by = urllib.request.urlopen('https://api.weibo.com/oauth2/access_token',
-                                data = bytes(querystring.encode('utf8'))).read()
-    params = json.loads(str(by, encoding = 'utf8'))
-    if "access_token" in params:
+                                data=bytes(querystring.encode('utf8'))).read()
+    j = json.loads(str(by, encoding='utf8'))
+    for item in j:
+        print("item:" + item)
+
+    if "access_token" in j:
         user = request.user
         if user.is_authenticated():
             tokenService = TokenService(user)
-            tokenService.addToken(site = u"sina", **params)
+            tokenService.addToken(site=u"sina", access_token=j["access_token"], refresh_token="",
+                                  expires_in=j['expires_in'], remind_in=j['remind_in'], open_id=j['uid'])
         else:
-            oauthService = OpenAuthService(site = u"sina", **params)
+            oauthService = OpenAuthService(site=u"sina", access_token=j["access_token"], refresh_token="",
+                                           expires_in=j['expires_in'], remind_in=j['remind_in'], open_id=j['uid'])
             ret = oauthService.get_or_create_user()
             user = ret["user"]
             if user.is_active:
                 login(request, user)
             else:
                 return redirect("index")
-        return redirect("home:content")
+        return redirect("home:statuses")
     else:
         pass
     return redirect("index")
@@ -179,8 +187,10 @@ def sw_oauth_request(request):
     """
     请求腾讯微博的code
     """
-    request_code = r'https://api.weibo.com/oauth2/authorize?client_id='\
-                   + '2749469053'\
-                   + '&response_type=code&redirect_uri='\
-                   + domain + reverse("account:sw_oauth_confirm", kwargs = {})
+    import random
+
+    state = random.randint(100000, 999999)
+    request.session['sw_oauth_state'] = str(state)
+    request_code = r'https://api.weibo.com/oauth2/authorize?client_id=' + '2749469053' + '&response_type=code&redirect_uri=http://127.0.0.1:8080/account/sw_oauth_confirm&state=' + str(
+        state)
     return redirect(request_code)
