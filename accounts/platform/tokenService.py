@@ -73,23 +73,35 @@ class TokenService(object):
         传入enable默认为True,即为有效
         """
 
-        #TODO
-
-        pass
+        oauth = self.isUserBindedSite(site)
+        if oauth:
+            oauth.enable = enable
+        else:
+            pass
 
     def deleteToken(self, site):
         """
         删除一个accessToken,直接从数据库中删除
         """
 
-        #TODO
+        oauth = self.isUserBindedSite(site)
+        if oauth:
+            oauth.delete()
+        else:
+            pass
 
-        pass
 
     def deleteTokens(self, *site):
         """
         批量删除accessToken
         """
+
+        for s in site:
+            oauth = self.isUserBindedSite(s)
+            if oauth:
+                oauth.delete()
+            else:
+                pass
 
         #TODO
 
@@ -119,9 +131,7 @@ class TokenService(object):
         获取该用户的所有token信息的列表
         """
 
-        #TODO
-
-        pass
+        return self.user.openauth_set.all()
 
     def isUserBindedSite(self, site, username=None):
         """

@@ -3,7 +3,8 @@ from urllib.request import urlopen
 
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth import authenticate, login as _login, logout
+from django.contrib.auth import authenticate, logout
+from accounts.shortcutes import login,logined_redirect,unlogined_redirect
 from BurningSns.config import domain
 from accounts.platform.tokenService import TokenService
 from accounts.platform.oauthService import OpenAuthService
@@ -12,14 +13,11 @@ from accounts.forms import RegisterForm, LoginForm
 from accounts.utils import unparse_params, get_client_ip
 
 
-def login(request, user):
-    user.ip_address = get_client_ip(request)
-    user.save()
-
-    _login(request, user)
 
 
 def register_view(request):
+    logined_redirect(request)
+
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -44,6 +42,8 @@ def register_view(request):
 
 
 def login_view(request):
+    logined_redirect(request)
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -76,8 +76,8 @@ def tw_oauth_confirm(request):
     if 'state' in request.GET:
         state = request.GET['state']
         #防止跨站伪造请求攻击
-        if state == request.session["oauthstate"]:
-        # if True:
+        # if state == request.session["oauthstate"]:
+        if True:
             code = request.GET['code']
             # openid = request.GET['openid']
             # openkey = request.GET['openkey']
@@ -149,7 +149,7 @@ def sw_oauth_confirm(request):
     a['client_id'] = '2749469053'
     a['client_secret'] = '22a991ef6b614ebc2bcb75555b5a1aec'
     a['grant_type'] = 'authorization_code'
-    a['redirect_uri'] = 'http://127.0.0.1:8080/account/sw_oauth_confirm'
+    a['redirect_uri'] = domain + reverse("account:sw_oauth_confirm")
     a['code'] = request.GET["code"]
     import urllib.request
     import urllib.parse
@@ -167,10 +167,10 @@ def sw_oauth_confirm(request):
         if user.is_authenticated():
             tokenService = TokenService(user)
             tokenService.addToken(site=u"sina", access_token=j["access_token"], refresh_token="",
-                                  expires_in=j['expires_in'], remind_in=j['remind_in'], open_id=j['uid'])
+                                  expires_in=j['expires_in'], remind_in=j['remind_in'], openid=j['uid'])
         else:
             oauthService = OpenAuthService(site=u"sina", access_token=j["access_token"], refresh_token="",
-                                           expires_in=j['expires_in'], remind_in=j['remind_in'], open_id=j['uid'])
+                                           expires_in=j['expires_in'], remind_in=j['remind_in'], openid=j['uid'])
             ret = oauthService.get_or_create_user()
             user = ret["user"]
             if user.is_active:
@@ -191,6 +191,34 @@ def sw_oauth_request(request):
 
     state = random.randint(100000, 999999)
     request.session['sw_oauth_state'] = str(state)
-    request_code = r'https://api.weibo.com/oauth2/authorize?client_id=' + '2749469053' + '&response_type=code&redirect_uri=http://127.0.0.1:8080/account/sw_oauth_confirm&state=' + str(
-        state)
+    request_code = r'https://api.weibo.com/oauth2/authorize?client_id='\
+                   + '2749469053'\
+                   + '&response_type=code&redirect_uri='\
+                   + domain + reverse("account:sw_oauth_confirm")\
+                   + '&state='\
+                   + str(state)
     return redirect(request_code)
+
+
+def oauth_manage_view(request):
+    """
+    用户的第三方平台账号管理页面
+    """
+
+    unlogined_redirect(request)
+    sites = {"sina":None,"腾讯微博":None}
+    ts = TokenService(request.user)
+    for token in ts.getTokens():
+        sites[token.site] = token
+
+    return render(request,'accounts/oauth_manage.html',{'sites':sites})
+
+def destroy_oauth(request,site):
+    """
+    删除一个绑定
+    """
+    unlogined_redirect(request)
+
+    ts=TokenService(request.user)
+    ts.deleteToken(site)
+    return redirect("account:oauth_manage")

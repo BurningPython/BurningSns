@@ -1,0 +1,19 @@
+<div>
+    <ul>
+        {% for item in sites.items %}
+            <li>
+            <p>{{ item.0 }}:</p>
+            {% if item.1 %}
+                <p>已绑定 <a href="{% url 'account:destroy_oauth' site=item.0 %}">解绑</a></p>
+            {% else %}
+                {% if item.0 == "sina"%}
+                    <p><a href="{% url 'account:sw_oauth_request' %}">绑定</a></p>
+                {% elif item.0 == "腾讯微博"%}
+                    <p><a href="{% url 'account:tw_oauth_request' %}">绑定</a></p>
+                {% else %}
+                {% endif %}
+            {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
