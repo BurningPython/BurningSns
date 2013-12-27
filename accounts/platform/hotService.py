@@ -55,20 +55,63 @@ class StatusService(BaseHotService):
         """
         获取好友的动态信息
 
+        params里面要定义好size字段来指定要获取的内容数量,默认为40
+
         **params:请求参数
         
         """
+        if 'size' in params:
+            size = params['size']
+        else:
+            size = 40
+
         retdata = HotData()
+        data_store = {}
         for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].statusService
-                data = service.get_friends_statuses(**params)
-                retdata.append(data)
+                response_data = service.get_friends_statuses(**params)
+                #获取第一批数据
+                if response_data.ret == 0 and len(response_data.data) > 0:
+                    data_store[sname] = response_data.data
+                #如果第一批数据获取失败,则认为该绑定可能已经失效,之后不再获取
+                else:
+                    retdata.set_error_flag(response_data)
             else:
                 continue
 
-        retdata.data.sort(key=lambda status : status.created_at,reverse=True)
+        while len(retdata.data) <= size:
+            to_insert = None
+            this_site = ""
+            for sname in data_store:
+                d = data_store[sname][0]
+                if (not to_insert) or (d.created_at > to_insert.created_at):
+                    to_insert = d
+                    this_site = sname
+            retdata.data.append(to_insert)
+            ds = data_store[this_site]
+            #删除这个已插入的数据
+            del ds[0]
+            #如果数据已经取完了,则再获取一批数据
+            if not ds:
+                #向下翻页标识
+                params['page_flag'] = 1
+                #最后一次插入的数据,各自的接口中可以根据这里的数据来进行分页
+                params['last_data'] = to_insert
+
+                service = self.site_handlers[this_site].statusService
+                response_data = service.get_friends_statuses(**params)
+                if response_data.ret == 0 and len(response_data.data) > 0:
+                    data_store[this_site] = response_data.data
+                #如果此时获取数据失败,则不再继续尝试获取该平台的数据
+                else:
+                    del data_store[this_site]
+
+            #如果data_store为None,即所有平台的数据都无法获取了,则跳出
+            if not data_store:
+                break
+
         return retdata
 
     def repost_status(self, site, statusid, **params):
@@ -105,7 +148,7 @@ class StatusService(BaseHotService):
         for sname in self.site_handlers:
             if sname.lower() in [s.lower() for s in site]:
                 response = self.site_handlers[sname].StatusService.update_status(**params)
-                retdata.append(response)
+                retdata.set_error_flag(response)
             else:
                 continue
 
@@ -175,7 +218,7 @@ class FavoriteService(BaseHotService):
             if (not site) or (sname in site):
                 service = self.site_handlers[sname].favoriteService
                 data = service.get_favorites(**params)
-                retdata.append(data)
+                retdata.set_error_flag(data)
             else:
                 continue
 
@@ -231,30 +274,25 @@ class HotData(object):
     data = []
     errors = []
 
-    def __init__(self,response = None):
+    def __init__(self):
         """
         初始化
         """
-        if response:
-            self.append(response)
+        pass
 
-    def append(self,response):
+    def set_error_flag(self, response):
         """
         合并DataResponse
         """
         if not isinstance(response,DataResponse):
             raise Exception("合并类型必须为DataResponse")
 
-        if response.ret == 0:
-            for _data in response.data:
-                self.data.append(_data)
-        else:
-            error = {
-                'code':response.code,
-                'site':response.site,
-                'message':response.message
-            }
-            self.errors.append(error)
+        error = {
+            'code':response.code,
+            'site':response.site,
+            'message':response.message
+        }
+        self.errors.append(error)
 
         return self
 

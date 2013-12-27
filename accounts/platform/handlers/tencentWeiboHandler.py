@@ -13,10 +13,11 @@ api_common_parm = "oauth_consumer_key=%s&access_token=%s&openid=%s&oauth_version
 import json
 from urllib.request import urlopen
 from urllib.parse import urlencode
-from accounts.platform.viewModels import *
-from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
+
+from accounts.platform.viewModels import *
 from accounts.platform.handlers.baseHandler import *
 
 
@@ -81,23 +82,40 @@ class TencentWeiboStatusService(IStatusService):
         contenttype:内容过滤。0-表示所有类型，1-带文本，2-带链接，4-带图片，8-带视频，0x10-带音频 建议不使用contenttype为1的类
                     型，如果要拉取只有文本的微博，建议使用0x80
         """
+        _params = {
+            "clientip":self.user.ip_address,
+            'format':'json',
+            'pageflag':'0',
+            'pagetime':'0',
+            'reqnum':'20',
+            'type':'3',
+            'contenttype':'0'
+        }
         api_name = "statuses/home_timeline"
-        params["clientip"] = self.user.ip_address
 
-        if not 'format' in params:
-            params['format'] = 'json'
-        if not 'pageflag' in params:
-            params['pageflag'] = '0'
-        if not 'pagetime' in params:
-            params['pagetime'] = '0'
-        if not 'reqnum' in params:
-            params['reqnum'] = '25'
-        if not 'type' in params:
-            params['type'] = '3'
-        if not 'contenttype' in params:
-            params['contenttype'] = '0'
+        #翻页标识 0 首页  1 下一页  2 上一页
+        if 'page_flag' in params:
+            _params['pageflag'] = params['page_flag']
+        if 'last_data' in params:
+            _params['pagetime'] = params['last_data'].created_at.timestamp()
+        if 'size' in params:
+            _params['reqnum'] = params['size']
 
-        ret_data = ts_utils.get_api_data(api_name, self.token, **params)
+        #下面可能用不到
+        if 'tx_format' in params:
+            _params['format'] = params['tx_format']
+        if 'tx_pageflag' in params:
+            _params['pageflag'] = params['tx_pageflag']
+        if 'tx_pagetime' in params:
+            _params['pagetime'] = params['tx_pagetime']
+        if 'tx_reqnum' in params:
+            _params['reqnum'] = params['tx_reqnum']
+        if 'tx_type' in params:
+            _params['type'] = params['tx_type']
+        if 'tx_contenttype' in params:
+            _params['contenttype'] = params['tx_contenttype']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, **_params)
 
         ret = ret_data['ret']
         code = ret_data['errcode']
