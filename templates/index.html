@@ -1,6 +1,12 @@
 <div>
-    <a href= {% url 'account:login' %}>登录</a>
-    <a href= {% url 'account:register' %}>注册</a>
-    <a href= {% url 'account:tw_oauth_request' %}>使用腾讯微博登陆</a>
+    {% if user %}
+        <p>hello,{{ user.username }}!</p>
+        <a href="{% url 'account:logout' %}">退出</a>
+        <a href="{% url 'account:oauth_manage' %}">管理我的社交网络账号</a>
+    {% else %}
+        <a href= {% url 'account:login' %}>登录</a>
+        <a href= {% url 'account:register' %}>注册</a>
+        <a href= {% url 'account:tw_oauth_request' %}>使用腾讯微博登陆</a>
+    {% endif %}
     <a href="/admin">管理</a>
 </div>
