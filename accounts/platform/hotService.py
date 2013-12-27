@@ -278,7 +278,8 @@ class HotData(object):
         """
         初始化
         """
-        pass
+        self.data = []
+        self.errors = []
 
     def set_error_flag(self, response):
         """
