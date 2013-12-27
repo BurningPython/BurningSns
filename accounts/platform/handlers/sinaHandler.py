@@ -78,6 +78,7 @@ class StatusService(IStatusService):
         if 'last_data' in parms:
             parms['max_id'] = parms['last_data'].mid
             print(parms['last_data'].created_at)
+            del parms['last_data']
         parms['count'] = 20
         print(self.__access_token)
         j = self.get_json(self.__url_news_getfriendsnews, parms)
@@ -111,8 +112,8 @@ class StatusService(IStatusService):
             querystring = '?access_token=' + self.__access_token
             for k in parms.keys():
                 querystring += '&' + k + '=' + str(parms[k])
-            print(url + querystring)
             try:
+                print(url + querystring)
                 html = urllib.request.urlopen(url + querystring).read().decode('utf8')
             except:
                 print("error current")
@@ -121,14 +122,12 @@ class StatusService(IStatusService):
         elif method == 'post':
             parms['access_token'] = self.__access_token
             querystring = urllib.parse.urlencode(parms)
-            print(url + querystring)
             html = urllib.request.urlopen(url, data = bytes(querystring.encode('utf8'))).read().decode('utf8')
             return json.loads(html)
         else:
             pass
 
     def toStatus(self, j):
-        print(j["created_at"])
         instance = Status(0)
         for key, value in j.items():
             setattr(instance, key, value)
