@@ -20,15 +20,17 @@ class OpenAuthService(object):
         """
         self.site = site
         
-        #这3个参数必须有
-        if 'access_token' and 'refresh_token' and 'expires_in' in args:
+        #这2个参数必须有
+        if ('access_token' in args) and ('expires_in' in args):
             self.access_token = args['access_token']
-            self.refresh_token = args['refresh_token']
             self.expires_in = args['expires_in']
         else:
-            #should raise something excption...
-            pass
+            raise Exception("没有给定access_token和expires_in参数")
         #以下参数可能不一定有
+        if 'refresh_token' in args:
+            self.refresh_token = args['refresh_token']
+        else:
+            self.refresh_token = ""
         if 'openid' in args:
             self.openid = args['openid']
         else:

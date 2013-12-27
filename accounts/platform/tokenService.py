@@ -30,13 +30,17 @@ class TokenService(object):
         则更新accesstoken信息
         """
 
-        if 'access_token' and 'refresh_token' and 'expires_in' in args:
+        #这2个参数必须有
+        if ('access_token' in args) and ('expires_in' in args):
             access_token = args['access_token']
-            refresh_token = args['refresh_token']
             expires_in = args['expires_in']
         else:
-            raise Exception("缺少access_token等必要参数")
-
+            raise Exception("没有给定access_token和expires_in参数")
+        #以下参数可能不一定有
+        if 'refresh_token' in args:
+            refresh_token = args['refresh_token']
+        else:
+            refresh_token = ""
         if 'openid' in args:
             openid = args['openid']
         else:
