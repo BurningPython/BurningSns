@@ -12,15 +12,16 @@ def content_view(request):
     ret = service.get_friends_statuses()
     return render(
         request,
-        "website/content.html",
-        {'user': user, 'timelinecontent': ret.data,'errors':ret.errors},
+        "website/friendsstatuses.html",
+        {'user': user, 'statuses': ret.data, 'errors': ret.errors},
     )
 
 def statuses_view(request):
     user = request.user
     user.username = 'Eleven'
     sina = SinaHandler(user)
-    statuses = sina.statusService.get_friends_statuses(count = 2)
+    statuses = sina.statusService.get_friends_statuses(count=20)
+    statuses = statuses.data
     #if not user.is_authenticated():
     #    return HttpResponseRedirect("index")
     #service = StatusService(user)
@@ -29,4 +30,4 @@ def statuses_view(request):
     #else:
     #    content = None
     #content = None
-    return render(request, "website/statuses.html", {'user':user,'statuses': statuses})
+    return render(request, "website/friendsstatuses.html", {'user': user, 'statuses': statuses})

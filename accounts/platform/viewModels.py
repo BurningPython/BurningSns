@@ -24,7 +24,8 @@ class Status(object):
     bmiddle_pic = ''                    #中等尺寸图片地址，没有时不返回此字段
     original_pic = ''                #原始图片地址，没有时不返回此字段
     geo = ''                        #地理信息字段 详细
-    user = ''                        #微博作者的用户名字段 详细
+    uid = 0                         #用户id
+    user = ''                        #微博作者的用户名字段
     nick = ''                       #用户的昵称
     head_pic = ''                   #用户头像
     retweeted_status = ''            #被转发的原微博信息字段，当该微博为转发微博时返回 详细
