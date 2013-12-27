@@ -81,7 +81,7 @@ class StatusService(BaseHotService):
             else:
                 continue
 
-        while len(retdata.data) <= size:
+        while len(retdata.data) <= size and data_store:
             to_insert = None
             this_site = ""
             for sname in data_store:
@@ -108,9 +108,6 @@ class StatusService(BaseHotService):
                 else:
                     del data_store[this_site]
 
-            #如果data_store为None,即所有平台的数据都无法获取了,则跳出
-            if not data_store:
-                break
 
         return retdata
 
@@ -278,7 +275,8 @@ class HotData(object):
         """
         初始化
         """
-        pass
+        self.data = []
+        self.errors = []
 
     def set_error_flag(self, response):
         """
