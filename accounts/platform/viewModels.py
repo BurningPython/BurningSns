@@ -54,3 +54,70 @@ class Comment(object):
     idstr = ''            #字符串型的评论ID
     status = ''            #评论的微博信息字段 详细
     reply_comment = ''    #评论来源评论，当本评论属于对另一评论的回复时返回此字段
+
+
+class HotData(object):
+    """
+    这是面向UI层的请求相应数据包类
+    由于请求有可能面向多个平台,因此每个请求都可能同时存在 失败 和 成功,
+    所以把请求失败的错误记录放在一个errors列表中,列表中的每个元素都是
+    一个字典,记录错误来源(site),错误码(code)和描述(message),以便对
+    用户做出提醒或是其他操作.
+    所有成功的请求数据均以统一的模型存放在data列表中
+    """
+
+    data = []
+    errors = []
+
+    def __init__(self,data = None, error = None):
+        """
+        初始化
+        """
+        self.data = []
+        self.errors = []
+
+        if data:
+            self.data.append(data)
+        if error:
+            self.errors.append(error)
+
+    def set_error_flag(self, response):
+        """
+        合并DataResponse
+        """
+        if not isinstance(response, DataResponse):
+            raise Exception("参数response的类型必须为DataResponse")
+
+        error = {
+            'code': response.code,
+            'site': response.site,
+            'message': response.message
+        }
+        self.errors.append(error)
+
+        return self
+
+class DataResponse(object):
+    """
+    这是每个平台基本接口请求数据后返回的数据包
+    """
+
+    data = []
+    code = ""
+    message = ""
+    site = ""
+    ret = 0
+
+    def __init__(self, ret = 0, code = 0, message = "", site="unknow", data = None):
+        """
+        ret:0为正常,1为错误
+        code:错误编码
+        message:错误描述
+        data:数据
+        """
+        self.ret = ret
+        self.code = code
+        self.message = message
+        self.site = site
+        if data:
+            self.data = data
