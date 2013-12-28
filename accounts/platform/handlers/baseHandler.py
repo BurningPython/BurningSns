@@ -6,7 +6,7 @@
 """
 #模块顶层服务
 class BaseHandler(object):
-    site = ''                    #社交网站名称
+    site = ''      #社交网站名称
     domain = ''    #域名
 
     statusesService = ""
@@ -35,7 +35,7 @@ class IStatusService(object):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def repost_status(self, statusid, **parms):        #转发：微博ID
+    def repost_status(self, statusid, content, **parms):        #转发：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 

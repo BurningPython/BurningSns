@@ -2,6 +2,8 @@
 Created on 2013年12月18日
 
 @author: july
+
+description:接口说明文档中,参数名前带星号(*)的表示必要参数,不带的表示可选参数
 '''
 
 #腾讯微博相关
@@ -24,6 +26,13 @@ from accounts.platform.handlers.baseHandler import *
 class ts_utils(object):
     @staticmethod
     def get_api_data(api_name, token, method = "get", **params):
+        """
+        返回api的数据
+        api_name:api名称
+        token:用户access_token
+        method:请求方式  get或post
+        params:参数
+        """
 
         base_url = api_url % api_name
         common_parm = api_common_parm % (client_id, token.access_token, token.openid)
@@ -43,43 +52,52 @@ class ts_utils(object):
 
 class TencentWeiboHandler(BaseHandler):
     """
-
+    腾讯微博handler
     """
 
     def __init__(self, user):
         """
-
+        初始化腾讯微博handler
         """
         super(BaseHandler, self).__init__()
-        self.statusService = TencentWeiboStatusService(user)
-        self.commentsService = TencentWeiboCommentService(user)
-        self.favouritesService = TencentWeiboFavoriteService(user)
+
+        try:
+            token = user.openauth_set.get(site = "腾讯微博")
+        except ObjectDoesNotExist:
+            raise Exception("用户'%s'未绑定'腾讯微博'平台" % user.username)
+
+        self.statusService = TencentWeiboStatusService(user, token)
+        self.commentsService = TencentWeiboCommentService(user, token)
+        self.favouritesService = TencentWeiboFavoriteService(user, token)
+
+        print("%sinitial succeed" % self.__class__)
 
 
 class TencentWeiboStatusService(IStatusService):
     """
-    动态服务
+    用户动态相关服务
     """
 
-    def __init__(self, user):
+    def __init__(self, user, token):
+        """
+        初始化
+        """
         super(IStatusService, self).__init__()
         self.user = user
-        try:
-            self.token = user.openauth_set.get(site = "腾讯微博")
-        except ObjectDoesNotExist:
-            self.token = None
+        self.token = token
+
 
     def get_friends_statuses(self, **params):
         """
         获取好友动态列表
-        format:     返回数据的格式（json或xml）
-        pageflag:   分页标识（0：第一页，1：向下翻页，2：向上翻页
-        pagetime:   本页起始时间（第一页：填0，向上翻页：填上一次请求返回的第一条记录时间，向下翻页：填上一次请求返回的最后一条记
+        *format:     返回数据的格式（json或xml）
+        *pageflag:   分页标识（0：第一页，1：向下翻页，2：向上翻页
+        *pagetime:   本页起始时间（第一页：填0，向上翻页：填上一次请求返回的第一条记录时间，向下翻页：填上一次请求返回的最后一条记
                     录时间）
-        reqnum:     每次请求记录的条数（1-70条）
-        type:       拉取类型（需填写十进制数字） 0x1 原创发表 0x2 转载 如需拉取多个类型请使用|，如(0x1|0x2)得到3,则type=3即可，
+        *reqnum:     每次请求记录的条数（1-70条）
+        *type:       拉取类型（需填写十进制数字） 0x1 原创发表 0x2 转载 如需拉取多个类型请使用|，如(0x1|0x2)得到3,则type=3即可，
                     填零表示拉取所有类型
-        contenttype:内容过滤。0-表示所有类型，1-带文本，2-带链接，4-带图片，8-带视频，0x10-带音频 建议不使用contenttype为1的类
+        *contenttype:内容过滤。0-表示所有类型，1-带文本，2-带链接，4-带图片，8-带视频，0x10-带音频 建议不使用contenttype为1的类
                     型，如果要拉取只有文本的微博，建议使用0x80
         """
         _params = {
@@ -101,7 +119,7 @@ class TencentWeiboStatusService(IStatusService):
         if 'size' in params:
             _params['reqnum'] = params['size']
 
-        #下面可能用不到
+        #下面时可选参数
         if 'tx_format' in params:
             _params['format'] = params['tx_format']
         if 'tx_pageflag' in params:
@@ -137,52 +155,110 @@ class TencentWeiboStatusService(IStatusService):
 
         return DataResponse(ret,code,message,site="腾讯微博",data=status_data)
 
-    def repost_status(self, statusid, **params):
+    def repost_status(self, statusid, content, **params):
         """
         转发微博
+        *format	 	 返回数据的格式（json或xml）
+        *content	 微博内容（若在此处@好友，需正确填写好友的微博账号，而非昵称），不超过140字
+                     注意：若转播的是源消息，则content中不需要带源消息的内容，即不要写成xxx||@yy:zzz的形式，只需要直接输入转播内容即可！
+        *reid	  	 转播父节点微博id
+        *clientip	 用户ip（必须正确填写用户侧真实ip，不能为内网ip及以127或255开头的ip，以分析用户所在地）
+
+        longitude	 经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
+        latitude	 纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
+        syncflag	 微博同步到空间分享标记（可选，0-同步，1-不同步，默认为0），目前仅支持oauth1.0鉴权方式，此时消息将同步到空间说说
+        compatibleflag	 容错标志，支持按位操作，默认为0。
+                         0x20-微博内容长度超过140字则报错
+                         0-以上错误做容错处理，即发表普通微博
         """
 
         api_name = "t/re_add"
 
-        params["clientip"] = self.user.ip_address
+        _params = {}
+        _params['format'] = 'json'
+        _params['content'] = content
+        _params['reid'] = statusid
+        _params["clientip"] = self.user.ip_address
 
-        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
+        if 'longitude' in params:
+            _params['longitude'] = params['longitude']
+        if 'latitude' in params:
+            _params['latitude'] = params['latitude']
+        if 'syncflag' in params:
+            _params['syncflag'] = params['syncflag']
+        if 'compatibleflag' in params:
+            _params['compatibleflag'] = params['compatibleflag']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
 
         return ret_data
 
     def destory_status(self, statusid, **params):
         """
         删除微博
+
+        *format	  返回数据的格式（json或xml）
+        *id	  	  微博id
         """
 
         api_name = "t/del"
 
-        params["clientip"] = self.user.ip_address
+        _params = {"format": 'json', 'id': statusid}
 
-        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
 
         return ret_data
 
     def update_status(self, content, **params):
         """
         发微博：微博内容
+
+        *format	  	        返回数据的格式（json或xml）
+        *content	  	    微博内容（若在此处@好友，需正确填写好友的微博账号，而非昵称），不超过140字
+        *clientip	  	    用户ip（必须正确填写用户侧真实ip，不能为内网ip及以127或255开头的ip，以分析用户所在地）
+
+        longitude	  	    经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
+        latitude	  	    纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
+        syncflag	  	    微博同步到空间分享标记（可选，0-同步，1-不同步，默认为0），目前仅支持oauth1.0鉴权方式
+        compatibleflag	 	容错标志，支持按位操作，默认为0。
+                            0x20-微博内容长度超过140字则报错
+                            0-以上错误做容错处理，即发表普通微博
         """
 
         api_name = "t/add"
-        params["clientip"] = self.user.ip_address
+        _params = {
+            'clientip':self.user.ip_address,
+            'format':'json',
+            'content':content,
+        }
 
-        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **params)
+        if 'longitude' in params:
+            _params['longitude'] = params['longitude']
+        if 'latitude' in params:
+            _params['latitude'] = params['latitude']
+        if 'syncflag' in params:
+            _params['syncflag'] = params['syncflag']
+        if 'compatibleflag' in params:
+            _params['compatibleflag'] = params['compatibleflag']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
         return ret_data
 
-#评论服务
+
 class TencentWeiboCommentService(ICommentService):
     """
-
+    评论服务
     """
 
-    def __init__(self, user):
+    def __init__(self, user, token):
+        """
+        初始化
+        """
+
         super(ICommentService, self).__init__()
         self.user = user
+        self.token = token
+
         pass
 
     def get_comments(self, statusid, **parms):        #获取指定ID的微博的所有评论
@@ -207,10 +283,11 @@ class TencentWeiboFavoriteService(IFavoriteService):
 
     """
 
-    def __init__(self, user):
+    def __init__(self, user, token):
         super(IFavoriteService, self).__init__()
 
         self.user = user
+        self.token = token
         pass
 
     def get_favorites(self, **parms):                #获取所有收藏
@@ -232,7 +309,8 @@ class TencentWeiboFavoriteService(IFavoriteService):
 def data_to_status(data):
     status = Status(data['id'])
 
-    status.site = "腾讯微博"
+    status.site = "tw"
+    status.sitename = "腾讯微博"
     status.created_at = datetime.fromtimestamp(data['timestamp'])#微博创建时间
     status.mid = 0                            #微博MID
     status.idstr = ''                        #字符串型的微博ID
