@@ -23,6 +23,12 @@ class BaseHotService(object):
     site_handlers = {}
 
     def __init__(self, user, *site):
+        """
+        初始化
+        """
+
+        self.site_handlers = {}
+
         if not site:
             site = [oauth.site for oauth in user.openauth_set.all()]
         for sname in site:
@@ -83,7 +89,7 @@ class StatusService(BaseHotService):
 
         return retdata
 
-    def repost_status(self, site, statusid, **params):
+    def repost_status(self, site, statusid, content, **params):
         """
         转发
         """
@@ -96,7 +102,7 @@ class StatusService(BaseHotService):
             retdata.set_error_flag(response)
         else:
             handler = self.site_handlers[site]
-            response = handler.statusService.repost_status(statusid,**params)
+            response = handler.statusService.repost_status(statusid, content, **params)
             if response.ret == 0:
                 pass
             else:
@@ -123,7 +129,7 @@ class StatusService(BaseHotService):
                 retdata.set_error_flag(response)
         return retdata
 
-    def update_status(self, *site, **params):
+    def update_status(self, *site, content, **params):
         """
         发表动态
         """
@@ -132,7 +138,7 @@ class StatusService(BaseHotService):
 
         for sname in self.site_handlers:
             if sname.lower() in [s.lower() for s in site]:
-                response = self.site_handlers[sname].StatusService.update_status(**params)
+                response = self.site_handlers[sname].statusService.update_status(content, **params)
                 if response.ret == 0:
                     pass
                 else:
