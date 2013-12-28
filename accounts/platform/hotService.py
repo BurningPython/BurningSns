@@ -233,7 +233,7 @@ class FavoriteService(BaseHotService):
             response = handler.favoriteService.get_favorite(favoriteid,**params)
         return HotData(response)
 
-    def create_favorite(self, site, statusid, **params):
+    def create_comment(self, site, statusid, **params):
         """
         收藏某条动态
         """
@@ -242,10 +242,10 @@ class FavoriteService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.favoriteService.create_favorite(statusid,**params)
+            response = handler.favoriteService.create_comment(statusid,**params)
         return HotData(response)
 
-    def destroy_favorite(self, site, statusid, **params):
+    def destroy_comment(self, site, statusid, **params):
         """
         取消收藏某条动态
         """
@@ -254,7 +254,7 @@ class FavoriteService(BaseHotService):
             response = DataResponse(ret=1,message=msg)
         else:
             handler = self.site_handlers[site]
-            response = handler.favoriteService.destroy_favorite(statusid,**params)
+            response = handler.favoriteService.destroy_comment(statusid,**params)
         return HotData(response)
 
 
