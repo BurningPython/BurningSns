@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from accounts.models import Token, User
 from accounts.platform.tokenService import TokenService
+from accounts.platform.core import safe_site
 
 
 class OpenAuthService(object):
@@ -18,6 +19,10 @@ class OpenAuthService(object):
         """
         根据site名称和accesstoken相关的参数来初始化这个Service
         """
+
+        #检验site名是否合法
+        safe_site(site)
+
         self.site = site
         
         #这2个参数必须有

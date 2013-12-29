@@ -1,15 +1,21 @@
-class Status(object):
+class ViewModel(object):
+    """
+    视图模型基类
+    """
+    site = ''                        #社交缩写名称
+    site_name = ''                  #社交网络中文全名
+    created_at = ''                #创建时间
+    id = 0                            #内容ID
+
+class Status(ViewModel):
     """
     docstring for News
     """
 
-    def __init__(self, id):
-        self.id = id
+    def __init__(self):
+        pass
 
-    site = ''                        #社交网站名称
-    created_at = ''                #微博创建时间
-    id = 0                            #微博ID
-    mid = 0                            #微博MID
+    mid = 0                            #内容MID
     idstr = ''                        #字符串型的微博ID
     text = ''                        #微博信息内容
     source = ''                        #微博来源
@@ -38,23 +44,33 @@ class Status(object):
     ad = []                            #微博流内的推广微博ID
     is_self = False                    #是否是自己发的微博
 
-class Comment(object):
+class Comment(ViewModel):
     """docstring for Comment"""
 
     def __init__(self):
         pass
 
-    site = ''            #社交网站名称
-    created_at = ''        #评论创建时间
-    id = 0                #评论的ID
     text = ''            #评论的内容
     source = ''            #评论的来源
+    source_url = ''
+    uid = 0
     user = ''            #评论作者的用户信息字段 详细
+    nick = ''
     mid = ''            #评论的MID
     idstr = ''            #字符串型的评论ID
     status = ''            #评论的微博信息字段 详细
     reply_comment = ''    #评论来源评论，当本评论属于对另一评论的回复时返回此字段
 
+class Topic(ViewModel):
+    """
+    话题模型  话题就是 #topic#
+    """
+    def __init__(self):
+        pass
+
+    favorite_num = 0     #被收藏次数,
+    status_num = 0   #话题下微博总数,
+    title = ''       #话题名字,
 
 class HotData(object):
     """

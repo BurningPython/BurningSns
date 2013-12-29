@@ -193,7 +193,7 @@ class CommentsService(ICommentService):    #评论服务
         parms['method'] = 'post'
         return self.get_json(self.__url_comments_destroy, parms)
 
-    def replay_comment(self, statusid, commentid, comment, **parms):
+    def reply_comment(self, statusid, commentid, comment, **parms):
         parms['method'] = 'post'
         parms['cid'] = commentid
         parms['id'] = statusid

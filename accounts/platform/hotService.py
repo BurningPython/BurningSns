@@ -32,12 +32,13 @@ class BaseHotService(object):
         if not site:
             site = [oauth.site for oauth in user.token_set.all()]
         for sname in site:
-            handler = None
-
-            if sname.lower() == "sina" or sname == "新浪微博":
+            if sname.lower() == "sina": #新浪微博
                 handler = SinaHandler(user)
-            elif sname == "腾讯微博":
+            elif sname.lower() == 'tw': #腾讯微博
                 handler = TencentWeiboHandler(user)
+            elif sname.lower() == 'dd': #点点
+                continue
+                #...
             else:
                 continue
 
@@ -83,7 +84,7 @@ class StatusService(BaseHotService):
             services,
             "get_friends_statuses",
             key="created_at",
-            data_size=40,
+            data_size=size,
             **params
         )
 
@@ -158,6 +159,9 @@ class CommentService(BaseHotService):
         BaseHotService.__init__(self, user, *site)
 
     def get_comments(self, site, statusid, **params):
+        '''
+        获取某条微博的评论
+        '''
 
         retdata = HotData()
 
@@ -206,7 +210,7 @@ class CommentService(BaseHotService):
                 retdata.set_error_flag(response)
         return retdata
 
-    def replay_comment(self, site, statusid, commentid, **params):
+    def reply_comment(self, site, statusid, commentid, **params):
         retdata = HotData()
 
         if not site in self.site_handlers:
@@ -215,7 +219,7 @@ class CommentService(BaseHotService):
             retdata.set_error_flag(response)
         else:
             handler = self.site_handlers[site]
-            response = handler.commentService.replay_comment(statusid, commentid, **params)
+            response = handler.commentService.reply_comment(statusid, commentid, **params)
             if response.ret == 0:
                 pass
             else:
@@ -235,15 +239,51 @@ class FavoriteService(BaseHotService):
         """
         获取所有收藏
         """
-        retdata = HotData()
+        if 'size' in params:
+            size = params['size']
+        else:
+            size = 40
+
+        services = {}
+
         for sname in self.site_handlers:
             #如果site为空,或者sname在site列表里面
             if (not site) or (sname in site):
-                service = self.site_handlers[sname].favoriteService
-                data = service.get_favorites(**params)
-                retdata.set_error_flag(data)
-            else:
-                continue
+                services[sname] = self.site_handlers[sname].favoriteService
+
+        retdata = data_integration(
+            services,
+            "get_favorites",
+            key="created_at",
+            data_size=size,
+            **params
+        )
+
+        return retdata
+
+    def get_topics(self, *site, **params):
+        """
+        获取所有订阅的话题
+        """
+        if 'size' in params:
+            size = params['size']
+        else:
+            size = 15
+
+        services = {}
+
+        for sname in self.site_handlers:
+            #如果site为空,或者sname在site列表里面
+            if (not site) or (sname in site):
+                services[sname] = self.site_handlers[sname].favoriteService
+
+        retdata = data_integration(
+            services,
+            "get_topics",
+            key="created_at",
+            data_size=size,
+            **params
+        )
 
         return retdata
 
@@ -271,6 +311,12 @@ class FavoriteService(BaseHotService):
             response = handler.favoriteService.create_favorite(statusid,**params)
         return HotData(response)
 
+    def create_topic(self, site, topicid,**params):
+        '''
+        订阅某个话题
+        '''
+        pass
+
     def destroy_favorite(self, site, statusid, **params):
         """
         取消收藏某条动态
@@ -283,6 +329,11 @@ class FavoriteService(BaseHotService):
             response = handler.favoriteService.destroy_favorite(statusid,**params)
         return HotData(response)
 
+    def destroy_topic(self, site, topicid, **params):
+        '''
+        取消订阅某个话题
+        '''
+        pass
 
 
 

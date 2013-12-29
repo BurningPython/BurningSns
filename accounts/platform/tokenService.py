@@ -12,7 +12,7 @@ Created on 2013年12月22日
 from django.core.exceptions import ObjectDoesNotExist
 
 from accounts.models import Token, User
-
+from accounts.platform.core import safe_site
 
 class TokenService(object):
     def __init__(self, user):
@@ -29,6 +29,9 @@ class TokenService(object):
         添加Token,即绑定一个AccessToken,如果该site已经被绑定,
         则更新accesstoken信息
         """
+
+        #检查site名是否合法,如果不合法,将抛出异常
+        safe_site(site)
 
         #这2个参数必须有
         if ('access_token' in args) and ('expires_in' in args):
@@ -68,8 +71,10 @@ class TokenService(object):
         #如果不存在这个openAuth,则继续
         else:
             user = self.user
+            from accounts.platform.config import site_name_map
             user.token_set.create(
                 site=site,
+                site_name=site_name_map[site],
                 access_token=access_token,
                 refresh_token=refresh_token,
                 expires_in=expires_in,
@@ -83,6 +88,9 @@ class TokenService(object):
         传入enable默认为True,即为有效
         """
 
+        #检查site名是否合法,如果不合法,将抛出异常
+        safe_site(site)
+
         oauth = self.get_open_auth(site)
         if oauth:
             oauth.enable = enable
@@ -94,6 +102,9 @@ class TokenService(object):
         """
         删除一个accessToken,直接从数据库中删除
         """
+
+        #检查site名是否合法,如果不合法,将抛出异常
+        safe_site(site)
 
         oauth = self.get_open_auth(site)
         if oauth:
@@ -110,9 +121,6 @@ class TokenService(object):
         for s in site:
             self.deleteToken(s)
 
-        #TODO
-
-        pass
 
     def refreshToken(self, site):
         """
@@ -120,7 +128,10 @@ class TokenService(object):
         refreshToken在OpenAuthModel里面有
         """
 
-        #TODO
+        #检查site名是否合法,如果不合法,将抛出异常
+        safe_site(site)
+
+        #TODO 有些平台可能没有refreshToken这个概念,所以这个以后再做打算
 
         pass
 
@@ -129,9 +140,8 @@ class TokenService(object):
         批量刷新refreshToken
         """
 
-        #TODO
-
-        pass
+        for s in site:
+            self.refreshToken(s)
 
     def getTokens(self):
         """
@@ -145,6 +155,9 @@ class TokenService(object):
         获取用户在平台上的token信息
         如果是,返回openauth对象,否则返回None
         """
+
+        #检查site名是否合法,如果不合法,将抛出异常
+        safe_site(site)
 
         if username:
             try:
