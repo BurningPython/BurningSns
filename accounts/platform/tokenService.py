@@ -11,7 +11,7 @@ Created on 2013年12月22日
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from accounts.models import OpenAuth, User
+from accounts.models import Token, User
 
 
 class TokenService(object):
@@ -46,10 +46,20 @@ class TokenService(object):
         else:
             openid = ""
 
-        oauth = self.isUserBindedSite(site=site)
+        #这段代码是为了防止同一个token被多个账号绑定
+        try:
+            #尝试获取这个token
+            t = Token.objects.get(access_token=access_token,site=site)
+        except:
+            pass
+        else:
+            #如果该token已经被其他账号绑定,先解除其他账号上的绑定,再绑定到该账号上
+            if t.user.username != self.user.username:
+                t.delete()
+
+        oauth = self.get_open_auth(site=site)
         #如果已经存在该openAuth,则更新
         if oauth:
-            oauth.site = site
             oauth.access_token = access_token
             oauth.refresh_token = refresh_token
             oauth.expires_in = expires_in
@@ -58,7 +68,7 @@ class TokenService(object):
         #如果不存在这个openAuth,则继续
         else:
             user = self.user
-            user.openauth_set.create(
+            user.token_set.create(
                 site=site,
                 access_token=access_token,
                 refresh_token=refresh_token,
@@ -73,9 +83,10 @@ class TokenService(object):
         传入enable默认为True,即为有效
         """
 
-        oauth = self.isUserBindedSite(site)
+        oauth = self.get_open_auth(site)
         if oauth:
             oauth.enable = enable
+            oauth.save()
         else:
             pass
 
@@ -84,7 +95,7 @@ class TokenService(object):
         删除一个accessToken,直接从数据库中删除
         """
 
-        oauth = self.isUserBindedSite(site)
+        oauth = self.get_open_auth(site)
         if oauth:
             oauth.delete()
         else:
@@ -97,11 +108,7 @@ class TokenService(object):
         """
 
         for s in site:
-            oauth = self.isUserBindedSite(s)
-            if oauth:
-                oauth.delete()
-            else:
-                pass
+            self.deleteToken(s)
 
         #TODO
 
@@ -131,11 +138,11 @@ class TokenService(object):
         获取该用户的所有token信息的列表
         """
 
-        return self.user.openauth_set.all()
+        return self.user.token_set.all()
 
-    def isUserBindedSite(self, site, username=None):
+    def get_open_auth(self, site, username=None):
         """
-        检查用户是否已经绑定到指的社交平台
+        获取用户在平台上的token信息
         如果是,返回openauth对象,否则返回None
         """
 
@@ -147,7 +154,7 @@ class TokenService(object):
         else:
             user = self.user
         try:
-            oauth = OpenAuth.objects.get(user=user, site=site)
+            oauth = Token.objects.get(user=user, site=site)
         except ObjectDoesNotExist:
             return None
         else:

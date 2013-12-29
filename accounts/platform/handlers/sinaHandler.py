@@ -68,7 +68,6 @@ class StatusService(IStatusService):
         self.user = user
         try:
             pass
-        #self.__access_token = user.openauth_set.all().get(site='sina')
         except ObjectDoesNotExist:
             pass
         finally:
@@ -174,7 +173,6 @@ class CommentsService(ICommentService):    #评论服务
         self.user = user
         try:
             pass
-        #self.__access_token = user.openauth_set.all().get(site='sina')
         except ObjectDoesNotExist:
             pass
         finally:
@@ -245,7 +243,6 @@ class FavouritesService(IFavoriteService): #收藏服务
         self.user = user
         try:
             pass
-        #self.__access_token = user.openauth_set.all().get(site='sina')
         except ObjectDoesNotExist:
             pass
         finally:
@@ -304,7 +301,6 @@ class ShortUrlsService(IShortUrlService):
         self.user = user
         try:
             pass
-        #self.__access_token = user.openauth_set.all().get(site='sina')
         except ObjectDoesNotExist:
             pass
         finally:

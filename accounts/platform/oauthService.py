@@ -8,7 +8,7 @@ Created on 2013年12月12日
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from accounts.models import OpenAuth, User
+from accounts.models import Token, User
 from accounts.platform.tokenService import TokenService
 
 
@@ -54,7 +54,7 @@ class OpenAuthService(object):
         retdic = {}
         #尝试获取oauth,以此来得到对应的用户
         try:
-            oauth = OpenAuth.objects.get(
+            oauth = Token.objects.get(
                 site = self.site,
                 access_token = self.access_token,
                 refresh_token = self.refresh_token,

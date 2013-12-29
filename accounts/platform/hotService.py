@@ -30,7 +30,7 @@ class BaseHotService(object):
         self.site_handlers = {}
 
         if not site:
-            site = [oauth.site for oauth in user.openauth_set.all()]
+            site = [oauth.site for oauth in user.token_set.all()]
         for sname in site:
             handler = None
 

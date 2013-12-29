@@ -62,7 +62,7 @@ class TencentWeiboHandler(BaseHandler):
         super(BaseHandler, self).__init__()
 
         try:
-            token = user.openauth_set.get(site = "腾讯微博")
+            token = user.token_set.get(site = "腾讯微博")
         except ObjectDoesNotExist:
             raise Exception("用户'%s'未绑定'腾讯微博'平台" % user.username)
 
