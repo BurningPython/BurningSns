@@ -61,7 +61,7 @@ class ICommentService(object):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def create_comment(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
+    def create_comment(self, statusid, content, **parms):    #新建一条评论:微博ID，评论内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
@@ -69,7 +69,7 @@ class ICommentService(object):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
-    def replay_comment(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
+    def reply_comment(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
@@ -87,6 +87,13 @@ class IFavoriteService(object):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
+    def get_topics(self,**parms):
+        """
+        获取收藏的话题列表
+        """
+        raise Exception("接口(%s)未实现" % self.__name__)
+        pass
+
     def get_favorite(self, statusid, **parms):        #获取单条收藏：微博ID
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
@@ -95,7 +102,15 @@ class IFavoriteService(object):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 
+    def create_topic(self,topicid,**params):
+        raise Exception("接口(%s)未实现" % self.__name__)
+        pass
+
     def destroy_favorite(self, statusid, **parms):            #取消收藏：微博ID
+        raise Exception("接口(%s)未实现" % self.__name__)
+        pass
+
+    def destroy_topic(self, topicid, **parms):
         raise Exception("接口(%s)未实现" % self.__name__)
         pass
 

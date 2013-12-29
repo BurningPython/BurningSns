@@ -1,6 +1,7 @@
 __author__ = 'july'
 
 from accounts.platform.viewModels import HotData,DataResponse
+from accounts.platform.config import site_config
 
 def data_integration(services, call_name, compare_key="created_at", data_size=40, **params):
     """
@@ -77,6 +78,16 @@ def data_integration(services, call_name, compare_key="created_at", data_size=40
         retdata.set_error_flag(DataResponse(message="未获取任何数据"))
     #返回一个类型为HotData的对象
     return retdata
+
+
+def safe_site(site):
+    """
+    验证site是否合法
+    """
+    for s in site_config:
+        if site == s['site'] or site == s['site_name']:
+            return
+    raise Exception("不存在缩写名为%s的平台" % site)
 
 if __name__ == "__main__":
     pass

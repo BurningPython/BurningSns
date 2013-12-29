@@ -62,7 +62,7 @@ class TencentWeiboHandler(BaseHandler):
         super(BaseHandler, self).__init__()
 
         try:
-            token = user.openauth_set.get(site = "腾讯微博")
+            token = user.token_set.get(site = "tw")
         except ObjectDoesNotExist:
             raise Exception("用户'%s'未绑定'腾讯微博'平台" % user.username)
 
@@ -101,7 +101,7 @@ class TencentWeiboStatusService(IStatusService):
                     型，如果要拉取只有文本的微博，建议使用0x80
         """
         _params = {
-            "clientip":self.user.ip_address,
+            'clientip':self.user.ip_address,
             'format':'json',
             'pageflag':'0',
             'pagetime':'0',
@@ -109,6 +109,7 @@ class TencentWeiboStatusService(IStatusService):
             'type':'3',
             'contenttype':'0'
         }
+
         api_name = "statuses/home_timeline"
 
         #翻页标识 0 首页  1 下一页  2 上一页
@@ -153,7 +154,7 @@ class TencentWeiboStatusService(IStatusService):
         else:
             pass
 
-        return DataResponse(ret,code,message,site="腾讯微博",data=status_data)
+        return DataResponse(ret,code,message,site="tw",data=status_data)
 
     def repost_status(self, statusid, content, **params):
         """
@@ -166,7 +167,6 @@ class TencentWeiboStatusService(IStatusService):
 
         longitude	 经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
         latitude	 纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
-        syncflag	 微博同步到空间分享标记（可选，0-同步，1-不同步，默认为0），目前仅支持oauth1.0鉴权方式，此时消息将同步到空间说说
         compatibleflag	 容错标志，支持按位操作，默认为0。
                          0x20-微博内容长度超过140字则报错
                          0-以上错误做容错处理，即发表普通微博
@@ -174,24 +174,23 @@ class TencentWeiboStatusService(IStatusService):
 
         api_name = "t/re_add"
 
-        _params = {}
-        _params['format'] = 'json'
-        _params['content'] = content
-        _params['reid'] = statusid
-        _params["clientip"] = self.user.ip_address
+        _params = {
+            'format':'json',
+            'content':content,
+            'reid':statusid,
+            "clientip":self.user.ip_address
+        }
 
         if 'longitude' in params:
             _params['longitude'] = params['longitude']
         if 'latitude' in params:
             _params['latitude'] = params['latitude']
-        if 'syncflag' in params:
-            _params['syncflag'] = params['syncflag']
         if 'compatibleflag' in params:
             _params['compatibleflag'] = params['compatibleflag']
 
         ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
 
-        return ret_data
+        return make_response_data(ret_data)
 
     def destory_status(self, statusid, **params):
         """
@@ -207,7 +206,7 @@ class TencentWeiboStatusService(IStatusService):
 
         ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
 
-        return ret_data
+        return make_response_data(ret_data)
 
     def update_status(self, content, **params):
         """
@@ -219,7 +218,6 @@ class TencentWeiboStatusService(IStatusService):
 
         longitude	  	    经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
         latitude	  	    纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
-        syncflag	  	    微博同步到空间分享标记（可选，0-同步，1-不同步，默认为0），目前仅支持oauth1.0鉴权方式
         compatibleflag	 	容错标志，支持按位操作，默认为0。
                             0x20-微博内容长度超过140字则报错
                             0-以上错误做容错处理，即发表普通微博
@@ -236,13 +234,11 @@ class TencentWeiboStatusService(IStatusService):
             _params['longitude'] = params['longitude']
         if 'latitude' in params:
             _params['latitude'] = params['latitude']
-        if 'syncflag' in params:
-            _params['syncflag'] = params['syncflag']
         if 'compatibleflag' in params:
             _params['compatibleflag'] = params['compatibleflag']
 
         ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
-        return ret_data
+        return make_response_data(ret_data)
 
 
 class TencentWeiboCommentService(ICommentService):
@@ -261,26 +257,139 @@ class TencentWeiboCommentService(ICommentService):
 
         pass
 
-    def get_comments(self, statusid, **parms):        #获取指定ID的微博的所有评论
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+    def get_comments(self, statusid, **parms):
+        """
+        获取动态的评论列表
+        *format	  	 返回数据的格式（json或xml）
+        *flag	  	 类型标识。0－转播列表，1－点评列表，2－点评与转播列表
+        *rootid	  	 转发或回复的微博根结点id（源微博id）
+        *pageflag	 分页标识，用于翻页（0：第一页，1：向下翻页，2：向上翻页）
+        *pagetime	 本页起始时间，与pageflag、twitterid共同使用，实现翻页功能（第一页：填0，向上翻页：填上一次请求返回的第一条记录时间，向下翻页：填上一次请求返回的最后一条记录时间）
+        *reqnum	  	 每次请求记录的条数（1-100条）,默认为20条
+        *twitterid	 微博id，与pageflag、pagetime共同使用，实现翻页功能（第1页填0，继续向下翻页，填上一次请求返回的最后一条记录id）
+        """
 
-    def create_comment(self, statusid, comment, **parms):    #新建一条评论:微博ID，评论内容
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+        api_name = 't/re_list'
 
-    def destroy_comment(self, commentid, **parms):            #删除一条评论：评论ID
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+        _params={
+            'format':'json',
+            'flag':'1',
+            'rootid':statusid,
+            'pageflag':'0',
+            'pagetime':'0',
+            'reqnum':'20',
+            'twitterid':'0',
+        }
 
-    def replay_comment(self, statusid, commentid, content, **parms):    #回复一条评论，微博ID，评论ID，回复内容
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+        if 'page_flag' in parms:
+            _params['pageflag'] = parms['page_flag']
+        if 'last_data' in parms:
+            last_data = parms['last_data']
+            _params['twitterid'] = last_data.id
+            _params['pagetime'] = last_data.created_at.timestamp()
+        if 'size' in parms:
+            _params['reqnum'] = parms['size']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, **_params)
+
+        ret = ret_data['ret']
+        code = ret_data['errcode']
+        message = ret_data['msg']
+        status_data = []
+
+        #ret=0 即为请求成功
+        if ret == 0:
+            data = ret_data['data']
+            for item in data['info']:
+                try:
+                    status = data_to_comment(item)
+                except:
+                    continue
+                else:
+                    status_data.append(status)
+        else:
+            pass
+
+        return DataResponse(ret,code,message,site="腾讯微博",data=status_data)
+
+    def create_comment(self, statusid, content, **parms):
+        """
+        创建评论
+
+        *format	  	     返回数据的格式（json或xml）
+        *content	  	 微博内容（若在此处@好友，需正确填写好友的微博账号，而非昵称），不超过140字
+        *clientip	  	 用户ip（必须正确填写用户侧真实ip，不能为内网ip及以127或255开头的ip，以分析用户所在地）
+        *reid	  	     点评父节点微博id
+        longitude	  	 经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
+        latitude	  	 纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
+        compatibleflag	 容错标志，支持按位操作，默认为0。
+                         0x20-微博内容长度超过140字则报错
+                         0-以上错误做容错处理，即发表普通微博
+        """
+
+        api_name = 't/comment'
+        _params = {
+            'format':'json',
+            'content':content,
+            'clientip':self.user.ip_address,
+            'reid':statusid,
+        }
+
+        if 'longitude' in parms:
+            _params['longitude'] = parms['longitude']
+        if 'latitude' in parms:
+            _params['latitude'] = parms['latitude']
+        if 'compatibleflag' in parms:
+            _params['compatibleflag'] = parms['compatibleflag']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
+
+    def destroy_comment(self, commentid, **parms):
+        """
+        删除评论
+        """
+
+        return DataResponse(ret=1,message="腾讯微博暂不支持删除评论功能")
+
+    def reply_comment(self, statusid, commentid, content, **parms):
+        """
+        回复评论
+
+        *format	  	 返回数据的格式（json或xml）
+        *content	 微博内容（若在此处@好友，需正确填写好友的微博账号，而非昵称），不超过140字
+        *clientip	 用户ip（必须正确填写用户侧真实ip，不能为内网ip及以127或255开头的ip，以分析用户所在地）
+        *reid	  	 回复的父节点微博id
+        longitude	 经度，为实数，如113.421234（最多支持10位有效数字，可以填空）
+        latitude	 纬度，为实数，如22.354231（最多支持10位有效数字，可以填空）
+        compatibleflag	 容错标志，支持按位操作，默认为0。
+                         0x20-微博内容长度超过140字则报错
+                         0-以上错误做容错处理，即发表普通微博
+        """
+
+        api_name = 't/reply'
+
+        _params={
+            'format':'json',
+            'content':content,
+            'clientip':self.user.ip_address,
+            'reid':commentid,
+        }
+
+        if 'longitude' in parms:
+            _params['longitude'] = parms['longitude']
+        if 'latitude' in parms:
+            _params['latitude'] = parms['latitude']
+        if 'compatibleflag' in parms:
+            _params['compatibleflag'] = parms['compatibleflag']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
 
 #收藏服务
 class TencentWeiboFavoriteService(IFavoriteService):
     """
-
+    收藏服务
     """
 
     def __init__(self, user, token):
@@ -290,28 +399,220 @@ class TencentWeiboFavoriteService(IFavoriteService):
         self.token = token
         pass
 
-    def get_favorites(self, **parms):                #获取所有收藏
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+    def get_favorites(self, **params):
+        """
+        获取所有收藏列表
 
-    def get_favorite(self, statusid, **parms):        #获取单条收藏：微博ID
+        *format	 	 返回数据的格式（json或xml）
+        *pageflag	 是	 分页标识（0：第一页，1：向下翻页，2：向上翻页）
+        *pagetime	 是	 翻页用，第一页时：填0；向上翻页：填上一次请求返回的第一条记录时间；向下翻页：填上一次请求返回的最后一条记录时间
+        *reqnum	 	 每次请求记录的条数（1-100条）
+        *lastid	 	 翻页用，第一页时：填0；继续向上翻页：填上一次请求返回的第一条记录id；继续向下翻页：填上一次请求返回的最后一条记录id
+        """
+
+        api_name = 'fav/list_t'
+
+        _params = {
+            'format':'json',
+            'pageflag':'0',
+            'pagetime':'0',
+            'reqnum':'20',
+            'lastid':'0',
+        }
+
+        #翻页标识 0 首页  1 下一页  2 上一页
+        if 'page_flag' in params:
+            _params['pageflag'] = params['page_flag']
+        if 'last_data' in params:
+            last_data = params['last_data']
+            _params['pagetime'] = last_data.created_at.timestamp()
+            _params['lastid'] = last_data.id
+        if 'size' in params:
+            _params['reqnum'] = params['size']
+
+        #下面时可选参数
+        if 'tx_format' in params:
+            _params['format'] = params['tx_format']
+        if 'tx_pageflag' in params:
+            _params['pageflag'] = params['tx_pageflag']
+        if 'tx_pagetime' in params:
+            _params['pagetime'] = params['tx_pagetime']
+        if 'tx_reqnum' in params:
+            _params['reqnum'] = params['tx_reqnum']
+        if 'tx_lastid' in params:
+            _params['lastid'] = params['tx_lastid']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, **_params)
+
+        ret = ret_data['ret']
+        code = ret_data['errcode']
+        message = ret_data['msg']
+        status_data = []
+
+        #ret=0 即为请求成功
+        if ret == 0:
+            data = ret_data['data']
+            for item in data['info']:
+                try:
+                    status = data_to_status(item)
+                except:
+                    continue
+                else:
+                    status_data.append(status)
+        else:
+            pass
+
+        return DataResponse(ret,code,message,site="tw",data=status_data)
+
+    def get_topics(self, **params):
+        """
+        获取订阅的话题列表
+
+        *format	 	 返回数据的格式（json或xml）
+        *reqnum	 	 请求数（最多15）
+        *pageflag	 翻页标识（0：首页 1：向下翻页 2：向上翻页）
+        *pagetime	 翻页用，第一页时：填0；向上翻页：填上一次请求返回的第一条记录时间；向下翻页：填上一次请求返回的最后一条记录时间
+        *lastid	 	 翻页用，第一页时：填0；继续向上翻页：填上一次请求返回的第一条记录id；继续向下翻页：填上一次请求返回的最后一条记录id
+        """
+
+        api_name = 'fav/list_ht'
+
+        _params = {
+            'format':'json',
+            'pageflag':'0',
+            'pagetime':'0',
+            'reqnum':'15',
+            'lastid':'0',
+        }
+
+        #翻页标识 0 首页  1 下一页  2 上一页
+        if 'page_flag' in params:
+            _params['pageflag'] = params['page_flag']
+        if 'last_data' in params:
+            last_data = params['last_data']
+            _params['pagetime'] = last_data.created_at.timestamp()
+            _params['lastid'] = last_data.id
+        if 'size' in params:
+            _params['reqnum'] = params['size']
+
+        #下面时可选参数
+        if 'tx_format' in params:
+            _params['format'] = params['tx_format']
+        if 'tx_pageflag' in params:
+            _params['pageflag'] = params['tx_pageflag']
+        if 'tx_pagetime' in params:
+            _params['pagetime'] = params['tx_pagetime']
+        if 'tx_reqnum' in params:
+            _params['reqnum'] = params['tx_reqnum']
+        if 'tx_lastid' in params:
+            _params['lastid'] = params['tx_lastid']
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, **_params)
+
+        ret = ret_data['ret']
+        code = ret_data['errcode']
+        message = ret_data['msg']
+        status_data = []
+
+        #ret=0 即为请求成功
+        if ret == 0:
+            data = ret_data['data']
+            for item in data['info']:
+                try:
+                    topic = data_to_topic(item)
+                except:
+                    continue
+                else:
+                    status_data.append(topic)
+        else:
+            pass
+
+        return DataResponse(ret,code,message,site="tw",data=status_data)
+
+    def get_favorite(self, statusid, **parms):
         raise Exception("接口(%s)未实现" % self.__name__)
-        pass
 
     def create_favorite(self, statusid, **parms):            #添加收藏：微博ID
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+        """
+        收藏一条微博
+
+        *format	 返回数据的格式（json或xml）
+        *id	 	 需要收藏的微博id
+        """
+
+        api_name = 'fav/addt'
+
+        _params={
+            'format':'json',
+            'id':statusid,
+        }
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
+
+    def create_topic(self, topicid, **parms):            #添加收藏：微博ID
+        """
+        订阅一个话题
+
+        *format	 返回数据的格式（json或xml）
+        *id	 	 话题id
+        """
+
+        api_name = 'fav/addht'
+
+        _params={
+            'format':'json',
+            'id':topicid,
+        }
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
 
     def destroy_favorite(self, statusid, **parms):            #取消收藏：微博ID
-        raise Exception("接口(%s)未实现" % self.__name__)
-        pass
+        """
+        取消收藏一条微博
+
+        *format	 返回数据的格式（json或xml）
+        *id	 	 需要收藏的微博id
+        """
+
+        api_name = 'fav/delt'
+
+        _params={
+            'format':'json',
+            'id':statusid,
+        }
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
+
+    def destroy_topic(self, topicid, **parms):            #取消收藏：微博ID
+        """
+        取消订阅一个话题
+
+        *format	 返回数据的格式（json或xml）
+        *id	 	 话题的id
+        """
+
+        api_name = 'fav/delht'
+
+        _params={
+            'format':'json',
+            'id':topicid,
+        }
+
+        ret_data = ts_utils.get_api_data(api_name, self.token, method = "post", **_params)
+        return make_response_data(ret_data)
+
+###################以下是模型转换###################
 
 def data_to_status(data):
-    status = Status(data['id'])
-
+    status = Status()
+    status.id = data['id']
     status.site = "tw"
-    status.sitename = "腾讯微博"
+    status.site_name = "腾讯微博"
     status.created_at = datetime.fromtimestamp(data['timestamp'])#微博创建时间
+
     status.mid = 0                            #微博MID
     status.idstr = ''                        #字符串型的微博ID
     status.text = data['text']                       #微博信息内容
@@ -329,6 +630,7 @@ def data_to_status(data):
     status.geo = data['geo']                        #地理信息字段 详细
     status.user = data['name']                        #微博作者的用户信息字段 详细
     status.nick = data['nick']
+    status.uid = data['openid']
     status.head_pic = data['head'] + "/50''"
     status.retweeted_status = data['origtext']            #被转发的原微博信息字段，当该微博为转发微博时返回 详细
     status.reposts_count = data['count']                 #转发数
@@ -341,5 +643,49 @@ def data_to_status(data):
     if data['self'] == 0:
         status.is_self =True
     return status
+
+def data_to_comment(data):
+
+    comment = Comment()
+    comment.site = 'tw'
+    comment.site_name = '腾讯微博'
+    comment.id = data['id']
+    comment.created_at = datetime.fromtimestamp(data['timestamp'])
+
+    comment.text = data['text']            #评论的内容
+    comment.source = data['from']            #评论的来源
+    comment.source_url = data['fromurl']
+    comment.user = data['name']            #评论作者的用户信息字段 详细
+    comment.uid = data['openid']
+    comment.nick = data['nick']
+    comment.mid = data['openid']            #评论的MID
+    comment.idstr = data['openid']            #字符串型的评论ID
+    comment.status = data['source ']            #评论的微博信息字段 详细
+    comment.reply_comment = data['origtext']    #评论来源评论，当本评论属于对另一评论的回复时返回此字段
+    return comment
+
+def data_to_topic(data):
+    topic = Topic()
+    topic.id = data['id']
+    topic.site = "tw"
+    topic.site_name = "腾讯微博"
+    topic.created_at = datetime.fromtimestamp(data['timestamp'])#微博创建时间
+
+    topic.favorite_num = data['favnum']
+    topic.status_num = data['tweetnum']
+    topic.title = data['text']
+
+    return topic
+
+def make_response_data(data):
+    """
+    将返回的数据包装成DataResponse再返回
+    """
+    ret = DataResponse(data.ret,data.errcode,data.msg,site="tw")
+
+    if data.ret == 0:
+        ret.data = data.data
+
+    return ret
 if __name__ == '__main__':
     pass

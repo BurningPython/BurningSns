@@ -89,9 +89,10 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-class OpenAuth(models.Model):
+class Token(models.Model):
     user = models.ForeignKey(User)
     site = models.CharField(max_length = 255)
+    site_name = models.CharField(max_length= 255)
     access_token = models.CharField(max_length = 255)
     refresh_token = models.CharField(max_length = 255)
     expires_in = models.IntegerField()
