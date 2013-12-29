@@ -1,17 +1,12 @@
 <div>
     <ul>
-        {% for item in sites.items %}
+        {% for site in sitelist %}
             <li>
-            <p>{{ item.0 }}:</p>
-            {% if item.1 %}
-                <p>已绑定 <a href="{% url 'account:destroy_oauth' site=item.0 %}">解绑</a></p>
+            <p>{{ site.site_name }}:</p>
+            {% if site.token %}
+                <p>已绑定 <a href="{% url 'account:destroy_oauth' site=site.site %}">解绑</a></p>
             {% else %}
-                {% if item.0 == "sina"%}
-                    <p><a href="{% url 'account:sw_oauth_request' %}">绑定</a></p>
-                {% elif item.0 == "腾讯微博"%}
-                    <p><a href="{% url 'account:tw_oauth_request' %}">绑定</a></p>
-                {% else %}
-                {% endif %}
+                <p><a href="{% url site.oauth_request_view %}">绑定</a></p>
             {% endif %}
             </li>
         {% endfor %}

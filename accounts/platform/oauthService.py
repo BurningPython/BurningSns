@@ -8,8 +8,9 @@ Created on 2013年12月12日
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from accounts.models import OpenAuth, User
+from accounts.models import Token, User
 from accounts.platform.tokenService import TokenService
+from accounts.platform.core import safe_site
 
 
 class OpenAuthService(object):
@@ -18,6 +19,10 @@ class OpenAuthService(object):
         """
         根据site名称和accesstoken相关的参数来初始化这个Service
         """
+
+        #检验site名是否合法
+        safe_site(site)
+
         self.site = site
         
         #这2个参数必须有
@@ -54,7 +59,7 @@ class OpenAuthService(object):
         retdic = {}
         #尝试获取oauth,以此来得到对应的用户
         try:
-            oauth = OpenAuth.objects.get(
+            oauth = Token.objects.get(
                 site = self.site,
                 access_token = self.access_token,
                 refresh_token = self.refresh_token,

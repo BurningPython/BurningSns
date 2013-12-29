@@ -97,11 +97,11 @@ def tw_oauth_confirm(request):
                 if user.is_authenticated():
                     #如果是已登录的用户,则绑定一个openauth
                     tokenService = TokenService(user)
-                    tokenService.addToken(site = u"腾讯微博", **params)
+                    tokenService.addToken(site = 'tw', **params)
                 #如果是通过第三方认证登录的用户,检查该token是否已经绑定到某个账号,如果是的话,返回该用户
                 #否则系统自动创建一个账户,并绑定这个token
                 else:
-                    oauthService = OpenAuthService(site = u"腾讯微博", **params)
+                    oauthService = OpenAuthService(site = 'tw', **params)
                     ret = oauthService.get_or_create_user()
                     user = ret["user"]
                     if user.is_active:
@@ -206,12 +206,19 @@ def oauth_manage_view(request):
     """
 
     unlogined_redirect(request)
-    sites = {"sina":None,"腾讯微博":None}
-    ts = TokenService(request.user)
-    for token in ts.getTokens():
-        sites[token.site] = token
 
-    return render(request,'accounts/oauth_manage.html',{'sites':sites})
+    from accounts.platform.config import site_config
+    import copy
+
+    sitelist = copy.deepcopy(site_config)
+
+    ts = TokenService(request.user)
+    for site in sitelist:
+        for token in ts.getTokens():
+            if token.site == site['site']:
+                site['token'] = token
+
+    return render(request,'accounts/oauth_manage.html',{'sitelist':sitelist})
 
 def destroy_oauth(request,site):
     """
