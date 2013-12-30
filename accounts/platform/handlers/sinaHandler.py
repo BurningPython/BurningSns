@@ -127,7 +127,7 @@ class StatusService(IStatusService):
             pass
 
     def toStatus(self, j):
-        instance = Status(0)
+        instance = Status()
         for key, value in j.items():
             setattr(instance, key, value)
         import datetime

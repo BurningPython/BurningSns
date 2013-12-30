@@ -71,10 +71,10 @@ class TokenService(object):
         #如果不存在这个openAuth,则继续
         else:
             user = self.user
-            from accounts.platform.config import site_name_map
+            from accounts.platform.config import site_config
             user.token_set.create(
                 site=site,
-                site_name=site_name_map[site],
+                site_name=[n['site_name'] for n in site_config if n['site'] == site][0],
                 access_token=access_token,
                 refresh_token=refresh_token,
                 expires_in=expires_in,
