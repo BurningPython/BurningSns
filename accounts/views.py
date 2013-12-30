@@ -73,47 +73,44 @@ def tw_oauth_confirm(request):
     处理请求完code后的回调,同时申请腾讯微博accessToken
     """
 
-    if 'state' in request.GET:
-        state = request.GET['state']
-        #防止跨站伪造请求攻击
-        # if state == request.session["oauthstate"]:
-        if True:
-            code = request.GET['code']
-            # openid = request.GET['openid']
-            # openkey = request.GET['openkey']
+    state = request.GET.get('state',default=-1)
+    #防止跨站伪造请求攻击
+    oauthstate = request.session.get("oauthstate",default=-1)
+    if state == oauthstate:
+        code = request.GET['code']
+        # openid = request.GET['openid']
+        # openkey = request.GET['openkey']
 
-            from accounts.platform.handlers.tencentWeiboHandler import client_id, client_secret
+        from accounts.platform.handlers.tencentWeiboHandler import client_id, client_secret
 
-            access_token_url = "https://open.t.qq.com/cgi-bin/oauth2/access_token?"\
-                               + "client_id=%s&client_secret=%s&redirect_uri=%s&gra"\
-                               + "nt_type=authorization_code&code=%s&state=%s"
-            redirect_uri = domain + reverse("account:tw_oauth_confirm")
-            targetUrl = access_token_url % (client_id, client_secret, redirect_uri, code, state)
+        access_token_url = "https://open.t.qq.com/cgi-bin/oauth2/access_token?"\
+                           + "client_id=%s&client_secret=%s&redirect_uri=%s&gra"\
+                           + "nt_type=authorization_code&code=%s&state=%s"
+        redirect_uri = domain + reverse("account:tw_oauth_confirm")
+        targetUrl = access_token_url % (client_id, client_secret, redirect_uri, code, state)
 
-            response = str(urlopen(targetUrl).read(), encoding = "utf-8")
-            params = unparse_params(response)
-            if "access_token" in params:
-                user = request.user
-                if user.is_authenticated():
-                    #如果是已登录的用户,则绑定一个openauth
-                    tokenService = TokenService(user)
-                    tokenService.addToken(site = 'tw', **params)
-                #如果是通过第三方认证登录的用户,检查该token是否已经绑定到某个账号,如果是的话,返回该用户
-                #否则系统自动创建一个账户,并绑定这个token
-                else:
-                    oauthService = OpenAuthService(site = 'tw', **params)
-                    ret = oauthService.get_or_create_user()
-                    user = ret["user"]
-                    if user.is_active:
-                        login(request, user)
-                    else:
-                        return redirect("index")
-
-                return redirect("home:content")
+        response = str(urlopen(targetUrl).read(), encoding = "utf-8")
+        params = unparse_params(response)
+        if "access_token" in params:
+            user = request.user
+            if user.is_authenticated():
+                #如果是已登录的用户,则绑定一个openauth
+                tokenService = TokenService(user)
+                tokenService.addToken(site = 'tw', **params)
+            #如果是通过第三方认证登录的用户,检查该token是否已经绑定到某个账号,如果是的话,返回该用户
+            #否则系统自动创建一个账户,并绑定这个token
             else:
-                pass
-    else:
-        pass
+                oauthService = OpenAuthService(site = 'tw', **params)
+                ret = oauthService.get_or_create_user()
+                user = ret["user"]
+                if user.is_active:
+                    login(request, user)
+                else:
+                    return redirect("index")
+
+            return redirect("home:content")
+        else:
+            pass
 
     return redirect("index")
 

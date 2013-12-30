@@ -1,0 +1,154 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font: 12px/1.125 Arial, Helvetica, sans-serif;
+}
+
+a {
+    color: #0a8cd2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.bigdiv {
+    width: 600px;
+    background: white;
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.WB_text {
+    line-height: 23px;
+    font-size: 14px;
+    padding: 4px 0 4px;
+}
+
+.WB_handle {
+    float: right;
+    zoom: 1;
+}
+
+.WB_from {
+    /*float:left;*/
+    margin: 0 7px 0 0;
+}
+
+.WB_time {
+    margin: 0 7px 0 0;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.WB_feed_type {
+    padding: 20px 0 0;
+    margin: 0 20px 0;
+    zoom: 1;
+    border-bottom: 1px solid;
+}
+
+.WB_media_expand {
+    background: #ccc;
+    margin: 5px 0 15px;
+    border-radius: 3px;
+    border-width: 1px;
+    padding: 10px 20px 10px;
+    border-style: solid;
+    background: #f2f2f2;
+}
+
+.WB_feed_datail {
+    clear: both;
+    padding: 0 0 11px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    overflow: hidden;
+    border-color: #e6e6e6;
+}
+
+.WB_screen {
+    margin: -15px 0 0 544px;
+    position: absolute;
+    background: Red;
+    height: 16px;
+    width: 16px;
+}
+
+.W_ico12 {
+    width: 16px;
+    height: 16px;
+    background: Red;
+}
+
+.WB_detail {
+    color: #333;
+    zoom: 1;
+    display: block;
+    margin-left: 65px;
+}
+
+.S_txt2 {
+    color: #808080;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.S_txt3 {
+    margin: 0 6px 0 8px;
+}
+
+.S_line2 {
+    border-color: #e6e6e6;
+}
+
+.WB_info {
+    color: #333;
+}
+
+.WB_name {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 16px;
+    zoom: 1;
+    font-weight: bold;
+}
+
+.WB_arrow {
+    margin: -18px 0 0;
+    width: 22px;
+    cursor: default;
+    z-index: 0;
+    position: absolute;
+    overflow: hidden;
+    font-family: "SimSun";
+    line-height: 1.231;
+    font-size: 12px;
+    display: block;
+    height: 12px;
+}
+
+.WB_arrow span {
+    margin-left: -11px;
+}
+
+.WB_face {
+    float: left;
+    width: 50px;
+    position: relative;
+    display: block;
+}
+
+.W_face_radius {
+    border-radius: 2px;
+    height: 50px;
+    overflow: hidden;
+    display: block;
+}

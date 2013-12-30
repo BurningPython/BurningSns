@@ -1,9 +1,75 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>{% block title %}微辣 BURNING - PYTHON{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    {% block head %}{% endblock %}
+    <style>
+        body{
+            display: block;
+            padding:0;
+            margin:0;
+            background-position: center 0;
+            background-repeat: no-repeat;
+            background-image: url("{% static "website/images/body_bg.png" %}");
+            background-color: #BEE1F5;
+        }
+        .head{
+            width:100%;
+            height:40px;
+            background-color: purple;
+            box-shadow: 0 5px 3px gray;
+        }
+        .body{
+            width:960px;
+            height:auto;
+            min-height: 400px;
+            margin:25px auto;
+            background: white;
+        }
+        .side-left{
+            width:150px;
+            background: #EFEFEF;
+            float:left;
+            min-height: 400px;
+        }
+        .content{
+            width:600px;
+            background: white;
+            float:left;
+            box-shadow: #d9d9d9 -2px 0 2px;
+            min-height: 400px;
+        }
+        .side-right{
+            width:208px;
+            background: white;
+            float:right;
+            border-left: solid 2px #D9D9D9;
+            min-height: 400px;
+        }
+    </style>
 </head>
 <body>
+<div class="head">
 
+</div>
+<div class="body">
+    <div class="side-left">
+        {% block side_left %}
+            左边栏
+        {% endblock %}
+    </div>
+    <div class="content">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    <div class="side-right">
+        {% block side_right %}
+            右边栏
+        {% endblock %}
+    </div>
+</div>
 </body>
 </html>
